@@ -152,4 +152,15 @@ describe 'BotClient' do
 
     app.run_once
   end
+
+  it 'should get a /equipo message and respond with team name and team members' do
+    token = 'fake_token'
+
+    when_i_send_text(token, '/equipo')
+    then_i_get_text(token, 'Hola, somos el equipo Salta')
+
+    app = BotClient.new(token)
+
+    app.run_once
+  end
 end

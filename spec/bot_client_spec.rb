@@ -87,6 +87,25 @@ describe 'BotClient' do
     app.run_once
   end
 
+  # rubocop:disable RSpec/ExampleLength
+  it 'should get a /version_api message and respond with current version api' do
+    token = 'fake_token'
+    body = { "status": 'ok', "version": '0.0.36' }
+    stub_request(:get, 'http://webapp:3000/health?headers%5BContent-Type%5D=application/json')
+      .with(
+        headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
+      )
+      .to_return(status: 200, body: body.to_json, headers: {})
+
+    when_i_send_text(token, '/version_api')
+    then_i_get_text(token, '0.0.36')
+
+    app = BotClient.new(token)
+
+    app.run_once
+  end
+  # rubocop:enable RSpec/ExampleLength
+
   it 'should get a /say_hi message and respond with Hola Emilio' do
     token = 'fake_token'
 

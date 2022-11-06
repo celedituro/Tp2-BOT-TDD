@@ -208,4 +208,14 @@ describe 'BotClient' do
 
     BotClient.new(token).run_once
   end
+
+  it 'debo obtener un mensaje de error al enviar /registrar con un campo faltante' do
+    token = 'fake_token'
+    mock_post_request_api({ "nombre": 'Alejo', "telefono": '5435-4535' }, '/registrar', 400)
+
+    when_i_send_text(token, '/registrar Alejo, 5435-4535')
+    then_i_get_text(token, 'Error: faltan campos para completar el registro')
+
+    BotClient.new(token).run_once
+  end
 end

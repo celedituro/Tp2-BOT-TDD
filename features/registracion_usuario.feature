@@ -9,7 +9,6 @@ Escenario: Registración exitosa
     Cuando me registro
     Entonces se muestra el mensaje "Bienvenido Juan!"
 
-@wip
 Escenario: Registración con campos faltantes
     Dado que ingreso "/registrar Juan, 5123-1234"
     Cuando intento registrarme

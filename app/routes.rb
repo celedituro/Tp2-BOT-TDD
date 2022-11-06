@@ -2,6 +2,11 @@ require "#{File.dirname(__FILE__)}/../lib/routing"
 require "#{File.dirname(__FILE__)}/../lib/version"
 require "#{File.dirname(__FILE__)}/tv/series"
 
+ERRORES = {
+  '/unknown' => 'Uh? No te entiendo! Me repetis la pregunta?',
+  '/registrar' => 'Error: faltan campos para completar el registro'
+}.freeze
+POSICION_DEL_MANDO = 0
 class Routes
   include Routing
 
@@ -58,7 +63,7 @@ class Routes
   end
 
   default do |bot, message|
-    bot.api.send_message(chat_id: message.chat.id, text: 'Uh? No te entiendo! Me repetis la pregunta?')
+    bot.api.send_message(chat_id: message.chat.id, text: ERRORES[message.to_s.split[POSICION_DEL_MANDO]])
   end
 
   on_message '/version_api' do |bot, message|

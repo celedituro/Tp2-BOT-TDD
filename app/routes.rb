@@ -3,10 +3,9 @@ require "#{File.dirname(__FILE__)}/../lib/version"
 require "#{File.dirname(__FILE__)}/tv/series"
 
 ERRORES = {
-  '/unknown' => 'Uh? No te entiendo! Me repetis la pregunta?',
   '/registrar' => 'Error: faltan campos para completar el registro'
-}.freeze
-POSICION_DEL_MANDO = 0
+}.default = 'Uh? No te entiendo! Me repetis la pregunta?'
+POSICION_DEL_COMANDO = 0
 
 HTTP_CREADO_CORRECTAMENTE = 201
 
@@ -66,18 +65,18 @@ class Routes
   end
 
   default do |bot, message|
-    bot.api.send_message(chat_id: message.chat.id, text: ERRORES[message.to_s.split[POSICION_DEL_MANDO]])
+    bot.api.send_message(chat_id: message.chat.id, text: ERRORES[message.to_s.split[POSICION_DEL_COMANDO]])
   end
 
   on_message '/version_api' do |bot, message|
-    response = Faraday.get('http://webapp:3000/health')
+    response = Faraday.get("#{ENV['API_URL']}/health")
     body_hash = JSON.parse(response.body)
 
     bot.api.send_message(chat_id: message.chat.id, text: body_hash['version'])
   end
 
   on_message_pattern %r{/registrar (?<nombre>.*),(?<direccion>.*),(?<telefono>.*)} do |bot, message, args|
-    response = Faraday.post('http://webapp:3000/registrar', args.to_json, 'Content-Type' => 'application/json')
+    response = Faraday.post("#{ENV['API_URL']}/registrar", args.to_json, 'Content-Type' => 'application/json')
 
     if response.status != HTTP_CREADO_CORRECTAMENTE
       text = 'Error: el telefono ya está en uso'

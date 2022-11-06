@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'web_mock'
+require 'dotenv/load'
 # Uncomment to use VCR
 # require 'vcr_helper'
 
@@ -76,7 +77,7 @@ def then_i_get_keyboard_message(token, message_text)
 end
 
 def mock_get_request_api(body, path, status)
-  stub_request(:get, 'http://webapp:3000' + path)
+  stub_request(:get, (ENV['API_URL']).to_s + path)
     .with(
       headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
     )
@@ -84,7 +85,7 @@ def mock_get_request_api(body, path, status)
 end
 
 def mock_post_request_api(body, path, status)
-  stub_request(:post, 'http://webapp:3000' + path)
+  stub_request(:post, (ENV['API_URL']).to_s + path)
     .with(
       headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
     )

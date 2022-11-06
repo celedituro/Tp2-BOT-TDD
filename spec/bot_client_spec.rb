@@ -182,4 +182,26 @@ describe 'BotClient' do
 
     app.run_once
   end
+
+  it 'debo obtener Bienvenido Juan ! al enviar /registrar Juan, Cucha Cucha 1234, 5435-45356' do
+    token = 'fake_token'
+
+    when_i_send_text(token, '/registrar Juan, Cucha Cucha 1234, 5435-45356')
+    then_i_get_text(token, 'Bienvenido Juan!')
+
+    app = BotClient.new(token)
+
+    app.run_once
+  end
+
+  it 'debo obtener Bienvenido Alejo ! al enviar /registrar Alejo, 9 de Julio 222, 5435-45356' do
+    token = 'fake_token'
+
+    when_i_send_text(token, '/registrar Alejo, 9 de Julio 222, 5435-45356')
+    then_i_get_text(token, 'Bienvenido Alejo!')
+
+    app = BotClient.new(token)
+
+    app.run_once
+  end
 end

@@ -67,4 +67,8 @@ class Routes
 
     bot.api.send_message(chat_id: message.chat.id, text: body_hash['version'])
   end
+
+  on_message_pattern %r{/registrar (?<nombre>.*),(?<direccion>.*),(?<telefono>.*)} do |bot, message, args|
+    bot.api.send_message(chat_id: message.chat.id, text: "Bienvenido #{args['nombre']}!")
+  end
 end

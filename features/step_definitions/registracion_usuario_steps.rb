@@ -18,7 +18,7 @@ When(/^la cuenta no se crea$/) do
   pending
 end
 
-When(/^que existe un usuario con teléfono "5123\-1234"$/) do |_arg|
+When(/^que existe un usuario con teléfono "([^"]*)"$/) do |_arg|
   pending
 end
 

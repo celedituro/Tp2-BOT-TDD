@@ -218,4 +218,14 @@ describe 'BotClient' do
 
     BotClient.new(token).run_once
   end
+
+  it 'debo obtener un mensaje de error al enviar /registrar con un telefono repetido' do
+    token = 'fake_token'
+    mock_post_request_api({ "nombre": 'Alejo', "direccion": '9 de Julio 222', "telefono": '5435-4535' }, '/registrar', 409)
+
+    when_i_send_text(token, '/registrar Alejo, 9 de Julio 222, 5435-4535')
+    then_i_get_text(token, 'Error: el telefono ya está en uso')
+
+    BotClient.new(token).run_once
+  end
 end

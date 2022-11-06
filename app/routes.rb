@@ -7,6 +7,9 @@ ERRORES = {
   '/registrar' => 'Error: faltan campos para completar el registro'
 }.freeze
 POSICION_DEL_MANDO = 0
+
+HTTP_CREADO_CORRECTAMENTE = 201
+
 class Routes
   include Routing
 
@@ -75,7 +78,15 @@ class Routes
 
   on_message_pattern %r{/registrar (?<nombre>.*),(?<direccion>.*),(?<telefono>.*)} do |bot, message, args|
     response = Faraday.post('http://webapp:3000/registrar', args.to_json, 'Content-Type' => 'application/json')
-    body_hash = JSON.parse(response.body)
-    bot.api.send_message(chat_id: message.chat.id, text: "Bienvenido #{body_hash['nombre']}!")
+
+    if response.status != HTTP_CREADO_CORRECTAMENTE
+      text = 'Error: el telefono ya está en uso'
+    else
+      body_hash = JSON.parse(response.body)
+      nombre = body_hash['nombre']
+      text = "Bienvenido #{nombre}!"
+    end
+
+    bot.api.send_message(chat_id: message.chat.id, text: text)
   end
 end

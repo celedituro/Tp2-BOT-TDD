@@ -75,6 +75,22 @@ def then_i_get_keyboard_message(token, message_text)
     .to_return(status: 200, body: body.to_json, headers: {})
 end
 
+def mock_get_request_api(body, path, status)
+  stub_request(:get, 'http://webapp:3000' + path)
+    .with(
+      headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
+    )
+    .to_return(status: status, body: body.to_json, headers: {})
+end
+
+def mock_post_request_api(body, path, status)
+  stub_request(:post, 'http://webapp:3000' + path)
+    .with(
+      headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
+    )
+    .to_return(status: status, body: body.to_json, headers: {})
+end
+
 describe 'BotClient' do
   it 'should get a /version message and respond with current version' do
     token = 'fake_token'
@@ -87,24 +103,15 @@ describe 'BotClient' do
     app.run_once
   end
 
-  # rubocop:disable RSpec/ExampleLength
   it 'should get a /version_api message and respond with current version api' do
     token = 'fake_token'
-    body = { "status": 'ok', "version": '0.0.36' }
-    stub_request(:get, 'http://webapp:3000/health?headers%5BContent-Type%5D=application/json')
-      .with(
-        headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
-      )
-      .to_return(status: 200, body: body.to_json, headers: {})
+    mock_get_request_api({ "status": 'ok', "version": '0.0.36' }, '/health', 200)
 
     when_i_send_text(token, '/version_api')
     then_i_get_text(token, '0.0.36')
 
-    app = BotClient.new(token)
-
-    app.run_once
+    BotClient.new(token).run_once
   end
-  # rubocop:enable RSpec/ExampleLength
 
   it 'should get a /say_hi message and respond with Hola Emilio' do
     token = 'fake_token'
@@ -183,40 +190,22 @@ describe 'BotClient' do
     app.run_once
   end
 
-  # rubocop:disable RSpec/ExampleLength
   it 'debo obtener Bienvenido Juan! al enviar /registrar Juan, Cucha Cucha 1234, 5435-4535' do
     token = 'fake_token'
-    body = { "nombre": 'Juan', "direccion": 'Cucha Cucha 1234', "telefono": '5435-4535' }
-    stub_request(:post, 'http://webapp:3000/registrar')
-      .with(
-        headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
-      )
-      .to_return(status: 201, body: body.to_json, headers: {})
+    mock_post_request_api({ "nombre": 'Juan', "direccion": 'Cucha Cucha 1234', "telefono": '5435-4535' }, '/registrar', 201)
     when_i_send_text(token, '/registrar Juan, Cucha Cucha 1234, 5435-4535')
     then_i_get_text(token, 'Bienvenido Juan!')
 
-    app = BotClient.new(token)
-
-    app.run_once
+    BotClient.new(token).run_once
   end
-  # rubocop:enable RSpec/ExampleLength
 
-  # rubocop:disable RSpec/ExampleLength
   it 'debo obtener Bienvenido Alejo! al enviar /registrar Alejo, 9 de Julio 222, 5435-4535' do
     token = 'fake_token'
-    body = { "nombre": 'Alejo', "direccion": '9 de Julio 222', "telefono": '5435-4535' }
-    stub_request(:post, 'http://webapp:3000/registrar')
-      .with(
-        headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
-      )
-      .to_return(status: 201, body: body.to_json, headers: {})
+    mock_post_request_api({ "nombre": 'Alejo', "direccion": '9 de Julio 222', "telefono": '5435-4535' }, '/registrar', 201)
 
     when_i_send_text(token, '/registrar Alejo, 9 de Julio 222, 5435-4535')
     then_i_get_text(token, 'Bienvenido Alejo!')
 
-    app = BotClient.new(token)
-
-    app.run_once
+    BotClient.new(token).run_once
   end
-  # rubocop:enable RSpec/ExampleLength
 end

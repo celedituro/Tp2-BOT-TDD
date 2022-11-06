@@ -183,25 +183,40 @@ describe 'BotClient' do
     app.run_once
   end
 
-  it 'debo obtener Bienvenido Juan ! al enviar /registrar Juan, Cucha Cucha 1234, 5435-45356' do
+  # rubocop:disable RSpec/ExampleLength
+  it 'debo obtener Bienvenido Juan! al enviar /registrar Juan, Cucha Cucha 1234, 5435-4535' do
     token = 'fake_token'
-
-    when_i_send_text(token, '/registrar Juan, Cucha Cucha 1234, 5435-45356')
+    body = { "nombre": 'Juan', "direccion": 'Cucha Cucha 1234', "telefono": '5435-4535' }
+    stub_request(:post, 'http://webapp:3000/registrar')
+      .with(
+        headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
+      )
+      .to_return(status: 201, body: body.to_json, headers: {})
+    when_i_send_text(token, '/registrar Juan, Cucha Cucha 1234, 5435-4535')
     then_i_get_text(token, 'Bienvenido Juan!')
 
     app = BotClient.new(token)
 
     app.run_once
   end
+  # rubocop:enable RSpec/ExampleLength
 
-  it 'debo obtener Bienvenido Alejo ! al enviar /registrar Alejo, 9 de Julio 222, 5435-45356' do
+  # rubocop:disable RSpec/ExampleLength
+  it 'debo obtener Bienvenido Alejo! al enviar /registrar Alejo, 9 de Julio 222, 5435-4535' do
     token = 'fake_token'
+    body = { "nombre": 'Alejo', "direccion": '9 de Julio 222', "telefono": '5435-4535' }
+    stub_request(:post, 'http://webapp:3000/registrar')
+      .with(
+        headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
+      )
+      .to_return(status: 201, body: body.to_json, headers: {})
 
-    when_i_send_text(token, '/registrar Alejo, 9 de Julio 222, 5435-45356')
+    when_i_send_text(token, '/registrar Alejo, 9 de Julio 222, 5435-4535')
     then_i_get_text(token, 'Bienvenido Alejo!')
 
     app = BotClient.new(token)
 
     app.run_once
   end
+  # rubocop:enable RSpec/ExampleLength
 end

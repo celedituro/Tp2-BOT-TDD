@@ -69,6 +69,8 @@ class Routes
   end
 
   on_message_pattern %r{/registrar (?<nombre>.*),(?<direccion>.*),(?<telefono>.*)} do |bot, message, args|
-    bot.api.send_message(chat_id: message.chat.id, text: "Bienvenido #{args['nombre']}!")
+    response = Faraday.post('http://webapp:3000/registrar', args.to_json, 'Content-Type' => 'application/json')
+    body_hash = JSON.parse(response.body)
+    bot.api.send_message(chat_id: message.chat.id, text: "Bienvenido #{body_hash['nombre']}!")
   end
 end

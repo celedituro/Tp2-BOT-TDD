@@ -227,4 +227,31 @@ describe 'BotClient' do
 
     BotClient.new(token).run_once
   end
+
+  # rubocop:disable RSpec/ExampleLength
+  it 'debo obtener una lista con los menus disponibles al enviar /menus' do
+    token = 'fake_token'
+    mock_get_request_api({ "menus": [
+                           {
+                             id: 1,
+                             nombre: 'Menu individual',
+                             precio: 100
+                           },
+                           {
+                             id: 2,
+                             nombre: 'Menu parejas',
+                             precio: 175
+                           },
+                           {
+                             id: 3,
+                             nombre: 'Menu familiar',
+                             precio: 250
+                           }
+                         ] }, '/menus', 200)
+
+    when_i_send_text(token, '/menus')
+    then_i_get_text(token, 'devolucion de menus')
+    BotClient.new(token).run_once
+  end
+  # rubocop:enable RSpec/ExampleLength
 end

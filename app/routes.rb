@@ -6,7 +6,7 @@ POSICION_DEL_COMANDO = 0
 
 HTTP_CONFLICTO = 409
 HTTP_PARAMETROS_INCORRECTO = 400
-URL = ENV.fetch('API_URL', 'http://webapp:3000')
+URL = ENV['API_URL'] || 'http://webapp:3000'
 
 class Routes
   include Routing

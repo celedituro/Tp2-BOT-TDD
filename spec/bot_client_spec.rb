@@ -5,7 +5,7 @@ require 'web_mock'
 # require 'vcr_helper'
 
 require "#{File.dirname(__FILE__)}/../app/bot_client"
-URL = ENV.fetch('API_URL', 'http://webapp:3000')
+URL = 'http://webapp:3000'.freeze
 def when_i_send_text(token, message_text)
   body = { "ok": true, "result": [{ "update_id": 693_981_718,
                                     "message": { "message_id": 11,

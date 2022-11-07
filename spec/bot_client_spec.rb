@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'web_mock'
+require_relative '../app/presentador_menus.rb'
 
 # Uncomment to use VCR
 # require 'vcr_helper'
@@ -231,26 +232,12 @@ describe 'BotClient' do
   # rubocop:disable RSpec/ExampleLength
   it 'debo obtener una lista con los menus disponibles al enviar /menus' do
     token = 'fake_token'
-    mock_get_request_api({ "menus": [
-                           {
-                             id: 1,
-                             nombre: 'Menu individual',
-                             precio: 100
-                           },
-                           {
-                             id: 2,
-                             nombre: 'Menu parejas',
-                             precio: 175
-                           },
-                           {
-                             id: 3,
-                             nombre: 'Menu familiar',
-                             precio: 250
-                           }
-                         ] }, '/menus', 200)
+    menus = [{ 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100 }, { 'id' => 2, 'nombre' => 'Menu parejas', 'precio' => 175 }, { 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250 }]
+
+    mock_get_request_api({ "menus": menus }, '/menus', 200)
 
     when_i_send_text(token, '/menus')
-    then_i_get_text(token, 'devolucion de menus')
+    then_i_get_text(token, PresentadorMenus.new.presentar_menus(menus))
     BotClient.new(token).run_once
   end
   # rubocop:enable RSpec/ExampleLength

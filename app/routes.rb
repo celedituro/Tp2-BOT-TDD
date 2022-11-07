@@ -2,12 +2,11 @@ require "#{File.dirname(__FILE__)}/../lib/routing"
 require "#{File.dirname(__FILE__)}/../lib/version"
 require "#{File.dirname(__FILE__)}/tv/series"
 
-ERRORES = {
-  '/registrar' => 'Error: faltan campos para completar el registro'
-}.default = 'Uh? No te entiendo! Me repetis la pregunta?'
 POSICION_DEL_COMANDO = 0
 
-HTTP_CREADO_CORRECTAMENTE = 201
+HTTP_CONFLICTO = 409
+HTTP_PARAMETROS_INCORRECTO = 400
+URL = ENV.fetch('API_URL', 'http://webapp:3000')
 
 class Routes
   include Routing
@@ -65,27 +64,35 @@ class Routes
   end
 
   default do |bot, message|
-    bot.api.send_message(chat_id: message.chat.id, text: ERRORES[message.to_s.split[POSICION_DEL_COMANDO]])
+    bot.api.send_message(chat_id: message.chat.id, text: 'Uh? No te entiendo! Me repetis la pregunta?')
   end
 
   on_message '/version_api' do |bot, message|
-    response = Faraday.get("#{ENV['API_URL']}/health")
+    response = Faraday.get("#{URL}/health")
     body_hash = JSON.parse(response.body)
 
     bot.api.send_message(chat_id: message.chat.id, text: body_hash['version'])
   end
 
-  on_message_pattern %r{/registrar (?<nombre>.*),(?<direccion>.*),(?<telefono>.*)} do |bot, message, args|
-    response = Faraday.post("#{ENV['API_URL']}/registrar", args.to_json, 'Content-Type' => 'application/json')
-
-    if response.status != HTTP_CREADO_CORRECTAMENTE
-      text = 'Error: el telefono ya está en uso'
+  on_message_pattern %r{/registrar (?<datos>.*)} do |bot, message, args|
+    datos = args['datos'].split(',')
+    if datos.length != 3
+      text = 'Error: faltan campos para completar el registro'
     else
-      body_hash = JSON.parse(response.body)
-      nombre = body_hash['nombre']
-      text = "Bienvenido #{nombre}!"
-    end
+      body = { nombre: datos[0], direccion: datos[1], telefono: datos[2] }
+      response = Faraday.post("#{URL}/registrar", body.to_json, 'Content-Type' => 'application/json')
 
+      case response.status
+      when HTTP_CONFLICTO
+        text = 'Error: el telefono ya está en uso'
+      when HTTP_PARAMETROS_INCORRECTO
+        text = 'Error: faltan campos para completar el registro'
+      else
+        body_hash = JSON.parse(response.body)
+        nombre = body_hash['nombre']
+        text = "Bienvenido #{nombre}!"
+      end
+    end
     bot.api.send_message(chat_id: message.chat.id, text: text)
   end
 end

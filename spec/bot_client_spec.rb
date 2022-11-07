@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'web_mock'
-require 'dotenv/load'
+
 # Uncomment to use VCR
 # require 'vcr_helper'
 
 require "#{File.dirname(__FILE__)}/../app/bot_client"
-
+URL = ENV.fetch('API_URL', 'http://webapp:3000')
 def when_i_send_text(token, message_text)
   body = { "ok": true, "result": [{ "update_id": 693_981_718,
                                     "message": { "message_id": 11,
@@ -77,7 +77,7 @@ def then_i_get_keyboard_message(token, message_text)
 end
 
 def mock_get_request_api(body, path, status)
-  stub_request(:get, (ENV['API_URL']).to_s + path)
+  stub_request(:get, URL + path)
     .with(
       headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
     )
@@ -85,7 +85,7 @@ def mock_get_request_api(body, path, status)
 end
 
 def mock_post_request_api(body, path, status)
-  stub_request(:post, (ENV['API_URL']).to_s + path)
+  stub_request(:post, URL + path)
     .with(
       headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
     )
@@ -212,8 +212,6 @@ describe 'BotClient' do
 
   it 'debo obtener un mensaje de error al enviar /registrar con un campo faltante' do
     token = 'fake_token'
-    mock_post_request_api({ "nombre": 'Alejo', "telefono": '5435-4535' }, '/registrar', 400)
-
     when_i_send_text(token, '/registrar Alejo, 5435-4535')
     then_i_get_text(token, 'Error: faltan campos para completar el registro')
 

@@ -230,7 +230,7 @@ describe 'BotClient' do
     BotClient.new(token).run_once
   end
 
-  # rubocop:disable RSpec/ExampleLength
+  # rubocop:disable RSpec/ExampleLength, Metrics/LineLength
   it 'debo obtener una lista con los menus disponibles al enviar /menus' do
     token = 'fake_token'
     menus = [{ 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100 }, { 'id' => 2, 'nombre' => 'Menu parejas', 'precio' => 175 }, { 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250 }]
@@ -247,7 +247,7 @@ describe 'BotClient' do
     menus = [{ 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100 }, { 'id' => 2, 'nombre' => 'Menu parejas', 'precio' => 175 }, { 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250 }]
     mock_get_request_api(menus, '/menus', 200)
 
-    markup = '[{"text":"1-Menu individual ($100)\n","callback_data":"1"}],[{"text":"2-Menu parejas ($175)\n","callback_data":"2"}],[{"text":"3-Menu familiar ($250)\n","callback_data":"3"}]'
+    markup = '[{"text":"1-Menu individual ($100)\n","callback_data":"{:id=>1, :nombre=>\"Menu individual\"}"}],[{"text":"2-Menu parejas ($175)\n","callback_data":"{:id=>2, :nombre=>\"Menu parejas\"}"}],[{"text":"3-Menu familiar ($250)\n","callback_data":"{:id=>3, :nombre=>\"Menu familiar\"}"}]'
 
     when_i_send_text(token, '/pedir')
     then_i_get_keyboard_message(token, 'Que menu desea pedir?', markup)
@@ -256,5 +256,5 @@ describe 'BotClient' do
 
     app.run_once
   end
-  # rubocop:enable RSpec/ExampleLength
+  # rubocop:enable RSpec/ExampleLength,Metrics/LineLength
 end

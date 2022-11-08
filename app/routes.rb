@@ -110,8 +110,7 @@ class Routes
 
     presentador = PresentadorMenus.new
     kb = body_hash.map do |menu|
-      p presentador.generar_menu(menu)
-      Telegram::Bot::Types::InlineKeyboardButton.new(text: presentador.generar_menu(menu), callback_data: menu['id'])
+      Telegram::Bot::Types::InlineKeyboardButton.new(text: presentador.generar_menu(menu), callback_data: { id: menu['id'], nombre: menu['nombre'] }.to_s)
     end
     markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
 

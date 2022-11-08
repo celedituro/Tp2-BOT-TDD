@@ -7,8 +7,6 @@ class PresentadorMenus
     menu_presentacion
   end
 
-  protected
-
   def generar_menu(menu)
     "#{menu['id']}-#{menu['nombre']} ($#{menu['precio']})\n"
   end

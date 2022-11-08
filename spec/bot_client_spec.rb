@@ -61,7 +61,7 @@ def then_i_get_text(token, message_text)
     .to_return(status: 200, body: body.to_json, headers: {})
 end
 
-def then_i_get_keyboard_message(token, message_text)
+def then_i_get_keyboard_message(token, message_text, markup)
   body = { "ok": true,
            "result": { "message_id": 12,
                        "from": { "id": 715_612_264, "is_bot": true, "first_name": 'fiuba-memo2-prueba', "username": 'fiuba_memo2_bot' },
@@ -71,7 +71,7 @@ def then_i_get_keyboard_message(token, message_text)
   stub_request(:post, "https://api.telegram.org/bot#{token}/sendMessage")
     .with(
       body: { 'chat_id' => '141733544',
-              'reply_markup' => '{"inline_keyboard":[[{"text":"Jon Snow","callback_data":"1"}],[{"text":"Daenerys Targaryen","callback_data":"2"}],[{"text":"Ned Stark","callback_data":"3"}]]}',
+              'reply_markup' => "{\"inline_keyboard\":[#{markup}]}",
               'text' => message_text }
     )
     .to_return(status: 200, body: body.to_json, headers: {})
@@ -147,17 +147,18 @@ describe 'BotClient' do
 
     app.run_once
   end
-
+  # rubocop:disable RSpec/ExampleLength
   it 'should get a /tv message and respond with an inline keyboard' do
     token = 'fake_token'
-
+    markup = '[{"text":"Jon Snow","callback_data":"1"}],[{"text":"Daenerys Targaryen","callback_data":"2"}],[{"text":"Ned Stark","callback_data":"3"}]'
     when_i_send_text(token, '/tv')
-    then_i_get_keyboard_message(token, 'Quien se queda con el trono?')
+    then_i_get_keyboard_message(token, 'Quien se queda con el trono?', markup)
 
     app = BotClient.new(token)
 
     app.run_once
   end
+  # rubocop:enable RSpec/ExampleLength
 
   it 'should get a "Quien se queda con el trono?" message and respond with' do
     token = 'fake_token'
@@ -239,6 +240,21 @@ describe 'BotClient' do
     when_i_send_text(token, '/menus')
     then_i_get_text(token, PresentadorMenus.new.presentar_menus(menus))
     BotClient.new(token).run_once
+  end
+
+  it 'al enviar /pedir debo obtener las opciones de menus disponibles' do
+    token = 'fake_token'
+    menus = [{ 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100 }, { 'id' => 2, 'nombre' => 'Menu parejas', 'precio' => 175 }, { 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250 }]
+    mock_get_request_api(menus, '/menus', 200)
+
+    markup = '[{"text":"1-Menu individual ($100)\n","callback_data":"1"}],[{"text":"2-Menu parejas ($175)\n","callback_data":"2"}],[{"text":"3-Menu familiar ($250)\n","callback_data":"3"}]'
+
+    when_i_send_text(token, '/pedir')
+    then_i_get_keyboard_message(token, 'Que menu desea pedir?', markup)
+
+    app = BotClient.new(token)
+
+    app.run_once
   end
   # rubocop:enable RSpec/ExampleLength
 end

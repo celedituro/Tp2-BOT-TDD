@@ -100,8 +100,21 @@ class Routes
   on_message '/menus' do |bot, message|
     response = Faraday.get("#{URL}/menus")
     body_hash = JSON.parse(response.body)
-    p body_hash
 
     bot.api.send_message(chat_id: message.chat.id, text: PresentadorMenus.new.presentar_menus(body_hash))
+  end
+
+  on_message '/pedir' do |bot, message|
+    response = Faraday.get("#{URL}/menus")
+    body_hash = JSON.parse(response.body)
+
+    presentador = PresentadorMenus.new
+    kb = body_hash.map do |menu|
+      p presentador.generar_menu(menu)
+      Telegram::Bot::Types::InlineKeyboardButton.new(text: presentador.generar_menu(menu), callback_data: menu['id'])
+    end
+    markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
+
+    bot.api.send_message(chat_id: message.chat.id, text: 'Que menu desea pedir?', reply_markup: markup)
   end
 end

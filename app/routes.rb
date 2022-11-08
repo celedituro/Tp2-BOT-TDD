@@ -100,7 +100,8 @@ class Routes
   on_message '/menus' do |bot, message|
     response = Faraday.get("#{URL}/menus")
     body_hash = JSON.parse(response.body)
+    p body_hash
 
-    bot.api.send_message(chat_id: message.chat.id, text: PresentadorMenus.new.presentar_menus(body_hash['menus']))
+    bot.api.send_message(chat_id: message.chat.id, text: PresentadorMenus.new.presentar_menus(body_hash))
   end
 end

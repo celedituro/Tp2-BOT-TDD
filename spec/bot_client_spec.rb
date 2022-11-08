@@ -234,7 +234,7 @@ describe 'BotClient' do
     token = 'fake_token'
     menus = [{ 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100 }, { 'id' => 2, 'nombre' => 'Menu parejas', 'precio' => 175 }, { 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250 }]
 
-    mock_get_request_api({ "menus": menus }, '/menus', 200)
+    mock_get_request_api(menus, '/menus', 200)
 
     when_i_send_text(token, '/menus')
     then_i_get_text(token, PresentadorMenus.new.presentar_menus(menus))

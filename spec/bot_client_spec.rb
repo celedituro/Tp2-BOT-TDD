@@ -193,7 +193,7 @@ describe 'BotClient' do
 
   it 'debo obtener Bienvenido Alejo! al enviar /registrar Alejo, 9 de Julio 222, 5435-4535' do
     token = 'fake_token'
-    mock_post_request_api({ "nombre": 'Alejo', "direccion": '9 de Julio 222', "telefono": '5435-4535' }, '/registrar', 201)
+    mock_post_request_api({ "nombre": 'Alejo', "direccion": '9 de Julio 222', "telefono": '5435-4535', "id": 123 }, '/registrar', 201)
 
     when_i_send_text(token, '/registrar Alejo, 9 de Julio 222, 5435-4535')
     then_i_get_text(token, 'Bienvenido Alejo!')
@@ -211,7 +211,7 @@ describe 'BotClient' do
 
   it 'debo obtener un mensaje de error al enviar /registrar con un telefono repetido' do
     token = 'fake_token'
-    mock_post_request_api({ "nombre": 'Alejo', "direccion": '9 de Julio 222', "telefono": '5435-4535' }, '/registrar', 409)
+    mock_post_request_api({ "nombre": 'Alejo', "direccion": '9 de Julio 222', "telefono": '5435-4535', "id": 123 }, '/registrar', 409)
 
     when_i_send_text(token, '/registrar Alejo, 9 de Julio 222, 5435-4535')
     then_i_get_text(token, 'Error: el telefono ya está en uso')

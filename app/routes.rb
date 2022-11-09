@@ -125,7 +125,7 @@ class Routes
     response = Faraday.post("#{URL}/pedido", body.to_json, 'Content-Type' => 'application/json')
     case response.status
     when HTTP_NO_AUTORIZADO
-      text = "No podemos procesar tu consulta, necesitas registrarte primero"
+      text = 'No podemos procesar tu consulta, necesitas registrarte primero'
     else
       body_hash = JSON.parse(response.body)
       text = Menu.new.manejar_respuesta(body_hash['nombre_menu'], body_hash['id_pedido'])

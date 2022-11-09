@@ -87,7 +87,7 @@ class Routes
       case response.status
       when HTTP_CONFLICTO
         text = 'Error: el telefono ya está en uso'
-      when cHTTP_PARAMETROS_INCORRECTO
+      when HTTP_PARAMETROS_INCORRECTO
         text = 'Error: faltan campos para completar el registro'
       else
         body_hash = JSON.parse(response.body)

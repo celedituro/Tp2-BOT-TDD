@@ -8,6 +8,7 @@ POSICION_DEL_COMANDO = 0
 
 HTTP_CONFLICTO = 409
 HTTP_PARAMETROS_INCORRECTO = 400
+HTTP_NO_AUTORIZADO = 401
 URL = ENV['API_URL'] || 'http://webapp:3000'
 
 class Routes
@@ -122,9 +123,14 @@ class Routes
     body = { id_usuario: message.message.chat.id, id_menu: Integer(message.data) }
 
     response = Faraday.post("#{URL}/pedido", body.to_json, 'Content-Type' => 'application/json')
-    body_hash = JSON.parse(response.body)
-    mensaje_menu = Menu.new.manejar_respuesta(body_hash['nombre_menu'], body_hash['id_pedido'])
+    case response.status
+    when HTTP_NO_AUTORIZADO
+      text = "No podemos procesar tu consulta, necesitas registrarte primero"
+    else
+      body_hash = JSON.parse(response.body)
+      text = Menu.new.manejar_respuesta(body_hash['nombre_menu'], body_hash['id_pedido'])
+    end
 
-    bot.api.send_message(chat_id: message.message.chat.id, text: mensaje_menu)
+    bot.api.send_message(chat_id: message.message.chat.id, text: text)
   end
 end

@@ -2,6 +2,7 @@ require "#{File.dirname(__FILE__)}/../lib/routing"
 require "#{File.dirname(__FILE__)}/../lib/version"
 require "#{File.dirname(__FILE__)}/tv/series"
 require_relative '../app/presentador_menus.rb'
+require_relative '../app/tv/menu.rb'
 
 POSICION_DEL_COMANDO = 0
 
@@ -110,10 +111,21 @@ class Routes
 
     presentador = PresentadorMenus.new
     kb = body_hash.map do |menu|
-      Telegram::Bot::Types::InlineKeyboardButton.new(text: presentador.generar_menu(menu), callback_data: { id: menu['id'], nombre: menu['nombre'] }.to_s)
+      Telegram::Bot::Types::InlineKeyboardButton.new(text: presentador.generar_menu(menu), callback_data: menu['id'].to_s)
     end
     markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
 
     bot.api.send_message(chat_id: message.chat.id, text: 'Que menu desea pedir?', reply_markup: markup)
+  end
+
+  on_response_to 'Que menu desea pedir?' do |bot, message|
+    body = { id_usuario: message.message.chat.id, id_menu: Integer(message.data) }
+
+    response = Faraday.post("#{URL}/pedido", body.to_json, 'Content-Type' => 'application/json')
+    body_hash = JSON.parse(response.body)
+
+    mensaje_menu = Menu.new.manejar_respuesta(body_hash['nombre_menu'], body_hash['id_pedido'])
+
+    bot.api.send_message(chat_id: message.message.chat.id, text: mensaje_menu)
   end
 end

@@ -259,5 +259,15 @@ describe 'BotClient' do
     app.run_once
   end
 
+  xit 'debo obtener el estado de mi pedido al enviar /consultar 3' do
+    token = 'fake_token'
+    pedido = { 'id_pedido' => 3, 'estado' => 'en preparacion' }
+
+    mock_get_request_api(pedido, '/consultar', 200)
+
+    when_i_send_text(token, '/consultar 3')
+    then_i_get_text(token, PresentadorMenus.new.presentar_menus(menus))
+    BotClient.new(token).run_once
+  end
   # rubocop:enable RSpec/ExampleLength
 end

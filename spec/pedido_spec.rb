@@ -5,6 +5,6 @@ describe 'Pedido' do
     manejador_pedido = Pedido.new
     pedido = { 'id_pedido' => 1, 'estado' => 'en preparacion' }
 
-    expect(manejador_pedido.manejar_respuesta(pedido['id_pedido'], pedido['estado'])).to eq 'Su pedido 1 esta en preparacion'
+    expect(manejador_pedido.manejar_respuesta(pedido)).to eq 'Su pedido 1 esta en preparacion'
   end
 end

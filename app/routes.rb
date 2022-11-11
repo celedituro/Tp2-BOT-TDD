@@ -26,10 +26,6 @@ class Routes
     bot.api.send_message(chat_id: message.chat.id, text: "Chau, #{message.from.username}")
   end
 
-  on_message '/time' do |bot, message|
-    bot.api.send_message(chat_id: message.chat.id, text: "La hora es, #{Time.now}")
-  end
-
   on_message '/tv' do |bot, message|
     kb = Tv::Series.all.map do |tv_serie|
       Telegram::Bot::Types::InlineKeyboardButton.new(text: tv_serie.name, callback_data: tv_serie.id.to_s)
@@ -132,5 +128,13 @@ class Routes
     end
 
     bot.api.send_message(chat_id: message.message.chat.id, text: text)
+  end
+
+  on_message_pattern %r{/consultar (?<id_pedido>.*)} do |bot, message, args|
+    response = Faraday.get("#{URL}/pedido/#{args['id_pedido']}")
+    body_hash = JSON.parse(response.body)
+
+    text = Pedido.new.manejar_respuesta(body_hash)
+    bot.api.send_message(chat_id: message.chat.id, text: text)
   end
 end

@@ -82,7 +82,7 @@ class Routes
     if datos.length != 3
       text = 'Error: faltan campos para completar el registro'
     else
-      body = { nombre: datos[0], direccion: datos[1], telefono: datos[2], id: message.chat.id }
+      body = { nombre: datos[0], direccion: datos[1], telefono: datos[2], id: message.chat.id.to_s }
       response = Faraday.post("#{URL}/registrar", body.to_json, 'Content-Type' => 'application/json')
 
       case response.status
@@ -120,7 +120,7 @@ class Routes
   end
 
   on_response_to 'Que menu desea pedir?' do |bot, message|
-    body = { id_usuario: message.message.chat.id, id_menu: Integer(message.data) }
+    body = { id_usuario: message.message.chat.id.to_s, id_menu: Integer(message.data) }
 
     response = Faraday.post("#{URL}/pedido", body.to_json, 'Content-Type' => 'application/json')
     case response.status

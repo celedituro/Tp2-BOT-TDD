@@ -1,6 +1,8 @@
 require "#{File.dirname(__FILE__)}/../lib/routing"
 require "#{File.dirname(__FILE__)}/../lib/version"
 require "#{File.dirname(__FILE__)}/tv/series"
+require "#{File.dirname(__FILE__)}/tv/pedido"
+
 require_relative '../app/presentador_menus.rb'
 require_relative '../app/tv/menu.rb'
 

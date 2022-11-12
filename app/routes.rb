@@ -69,16 +69,16 @@ class Routes
   end
 
   on_message '/menus' do |bot, message|
-    respuesta = NonnaApi.new.obtener_menus
+    menus = NonnaApi.new.obtener_menus
+    respuesta = PresentadorMenus.new.presentar_menus(menus)
     bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 
   on_message '/pedir' do |bot, message|
-    response = Faraday.get("#{URL}/menus")
-    body_hash = JSON.parse(response.body)
+    menus = NonnaApi.new.obtener_menus
 
     presentador = PresentadorMenus.new
-    kb = body_hash.map do |menu|
+    kb = menus.map do |menu|
       Telegram::Bot::Types::InlineKeyboardButton.new(text: presentador.generar_menu(menu), callback_data: menu['id'].to_s)
     end
     markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)

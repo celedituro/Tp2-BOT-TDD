@@ -14,7 +14,7 @@ class NonnaApi
 
   def obtener_menus
     response = Faraday.get("#{URL}/menus")
-    PresentadorMenus.new.presentar_menus(JSON.parse(response.body))
+    JSON.parse(response.body)
   end
 
   def validate(datos)

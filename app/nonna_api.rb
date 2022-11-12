@@ -34,6 +34,25 @@ class NonnaApi
     end
   end
 
+  def pedir(response)
+    case response.status
+    when HTTP_NO_AUTORIZADO
+      raise NonnaError, 'No podemos procesar tu consulta, necesitas registrarte primero'
+    else
+      body_hash = JSON.parse(response.body)
+      Menu.new.manejar_respuesta(body_hash['nombre_menu'], body_hash['id_pedido'])
+    end
+  end
+
+  def pedir_menu(mensaje)
+    body = { id_usuario: mensaje.message.chat.id.to_s, id_menu: Integer(mensaje.data) }
+    response = Faraday.post("#{URL}/pedido", body.to_json, 'Content-Type' => 'application/json')
+    text = pedir(response)
+    text
+  rescue NonnaError => e
+    raise NonnaError, e.message
+  end
+
   def registrar_usuario(mensaje, argumentos)
     datos = argumentos['datos'].split(',')
     begin

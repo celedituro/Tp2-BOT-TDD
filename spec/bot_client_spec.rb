@@ -85,6 +85,14 @@ def mock_get_request_api(body, path, status)
     .to_return(status: status, body: body.to_json, headers: {})
 end
 
+def mock_patch_request_api(body, path, status)
+  stub_request(:patch, URL + path)
+    .with(
+      headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.15.4' }
+    )
+    .to_return(status: status, body: body.to_json, headers: {})
+end
+
 def mock_post_request_api(body, path, status)
   stub_request(:post, URL + path)
     .with(
@@ -266,6 +274,17 @@ describe 'BotClient' do
     mock_get_request_api(pedido, "/pedido/#{pedido['id_pedido']}", 200)
 
     when_i_send_text(token, '/consultar 3')
+    then_i_get_text(token, Pedido.new.manejar_respuesta(pedido))
+    BotClient.new(token).run_once
+  end
+
+  it 'debo obtener el estado cancelado de mi pedido al enviar /cancelar 4' do
+    token = 'fake_token'
+    pedido = { 'id_pedido' => 4, 'estado' => 'cancelado' }
+
+    mock_patch_request_api(pedido, "/cancelacion?id=#{pedido['id_pedido']}", 202)
+
+    when_i_send_text(token, '/cancelar 4')
     then_i_get_text(token, Pedido.new.manejar_respuesta(pedido))
     BotClient.new(token).run_once
   end

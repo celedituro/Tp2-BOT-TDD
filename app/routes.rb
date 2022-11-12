@@ -13,6 +13,7 @@ HTTP_PARAMETROS_INCORRECTO = 400
 HTTP_NO_AUTORIZADO = 401
 URL = ENV['API_URL'] || 'http://webapp:3000'
 
+# rubocop:disable Metrics/ClassLength
 class Routes
   include Routing
 
@@ -139,4 +140,13 @@ class Routes
     text = Pedido.new.manejar_respuesta(body_hash)
     bot.api.send_message(chat_id: message.chat.id, text: text)
   end
+
+  on_message_pattern %r{/cancelar (?<id_pedido>.*)} do |bot, message, args|
+    response = Faraday.patch("#{URL}/cancelacion?id=#{args['id_pedido']}")
+    body_hash = JSON.parse(response.body)
+
+    text = Pedido.new.manejar_respuesta(body_hash)
+    bot.api.send_message(chat_id: message.chat.id, text: text)
+  end
 end
+# rubocop:enable Metrics/ClassLength

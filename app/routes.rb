@@ -105,10 +105,8 @@ class Routes
   end
 
   on_message '/pedidos' do |bot, message|
-    id_usuario = message.chat.id
-    response = Faraday.get("#{URL}/pedidos/#{id_usuario}")
-    body_hash = JSON.parse(response.body)
-
-    bot.api.send_message(chat_id: message.chat.id, text: PresentadorPedidos.new.presentar_pedidos(body_hash))
+    pedidos = NonnaApi.new.pedidos(message)
+    text = PresentadorPedidos.new.presentar_pedidos(pedidos)
+    bot.api.send_message(chat_id: message.chat.id, text: text)
   end
 end

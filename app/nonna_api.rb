@@ -53,6 +53,12 @@ class NonnaApi
     JSON.parse(response.body)
   end
 
+  def pedidos(mensaje)
+    id_usuario = mensaje.chat.id
+    response = Faraday.get("#{URL}/pedidos/#{id_usuario}")
+    JSON.parse(response.body)
+  end
+
   private
 
   def registrar(response)

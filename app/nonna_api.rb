@@ -65,4 +65,9 @@ class NonnaApi
       raise NonnaError, e.message
     end
   end
+
+  def consultar_pedido(id_pedido)
+    response = Faraday.get("#{URL}/pedido/#{id_pedido}")
+    JSON.parse(response.body)
+  end
 end

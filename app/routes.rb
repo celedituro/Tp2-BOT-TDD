@@ -93,11 +93,9 @@ class Routes
   end
 
   on_message_pattern %r{/consultar (?<id_pedido>.*)} do |bot, message, args|
-    response = Faraday.get("#{URL}/pedido/#{args['id_pedido']}")
-    body_hash = JSON.parse(response.body)
-
-    text = Pedido.new.manejar_respuesta(body_hash)
-    bot.api.send_message(chat_id: message.chat.id, text: text)
+    pedidos = NonnaApi.new.consultar_pedido(args['id_pedido'])
+    respuesta = Pedido.new.manejar_respuesta(pedidos)
+    bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 
   on_message_pattern %r{/cancelar (?<id_pedido>.*)} do |bot, message, args|

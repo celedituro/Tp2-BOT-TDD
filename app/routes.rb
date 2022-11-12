@@ -99,10 +99,8 @@ class Routes
   end
 
   on_message_pattern %r{/cancelar (?<id_pedido>.*)} do |bot, message, args|
-    response = Faraday.patch("#{URL}/cancelacion?id=#{args['id_pedido']}")
-    body_hash = JSON.parse(response.body)
-
-    text = Pedido.new.manejar_respuesta(body_hash)
+    pedido_cancelado = NonnaApi.new.cancelar(args['id_pedido'])
+    text = Pedido.new.manejar_respuesta(pedido_cancelado)
     bot.api.send_message(chat_id: message.chat.id, text: text)
   end
 end

@@ -88,8 +88,11 @@ class Routes
   end
 
   on_response_to 'Que menu desea pedir?' do |bot, message|
-    respuesta = NonnaApi.new.pedir_menu(message)
-
+    begin
+      respuesta = NonnaApi.new.pedir_menu(message)
+    rescue StandardError => e
+      respuesta = e.message
+    end
     bot.api.send_message(chat_id: message.message.chat.id, text: respuesta)
   end
 

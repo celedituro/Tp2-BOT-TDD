@@ -7,11 +7,8 @@ require "#{File.dirname(__FILE__)}/nonna_api"
 require_relative '../app/presentador_menus.rb'
 require_relative '../app/tv/menu.rb'
 
-POSICION_DEL_COMANDO = 0
-
-HTTP_CONFLICTO = 409
-HTTP_PARAMETROS_INCORRECTO = 400
 HTTP_NO_AUTORIZADO = 401
+
 URL = ENV['API_URL'] || 'http://webapp:3000'
 
 class Routes
@@ -56,34 +53,15 @@ class Routes
   end
 
   on_message '/version_api' do |bot, message|
-    # response = Faraday.get("#{URL}/health")
-    # body_hash = JSON.parse(response.body)
-
     respuesta = NonnaApi.new.obtener_version
 
     bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 
   on_message_pattern %r{/registrar (?<datos>.*)} do |bot, message, args|
-    datos = args['datos'].split(',')
-    if datos.length != 3
-      text = 'Error: faltan campos para completar el registro'
-    else
-      body = { nombre: datos[0], direccion: datos[1], telefono: datos[2], id: message.chat.id.to_s }
-      response = Faraday.post("#{URL}/registrar", body.to_json, 'Content-Type' => 'application/json')
+    respuesta = NonnaApi.new.registrar_usuario(message, args)
 
-      case response.status
-      when HTTP_CONFLICTO
-        text = 'Error: el telefono ya está en uso'
-      when HTTP_PARAMETROS_INCORRECTO
-        text = 'Error: faltan campos para completar el registro'
-      else
-        body_hash = JSON.parse(response.body)
-        nombre = body_hash['nombre']
-        text = "Bienvenido #{nombre}!"
-      end
-    end
-    bot.api.send_message(chat_id: message.chat.id, text: text)
+    bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 
   on_message '/menus' do |bot, message|

@@ -3,6 +3,7 @@ require "#{File.dirname(__FILE__)}/../lib/version"
 require "#{File.dirname(__FILE__)}/tv/series"
 require "#{File.dirname(__FILE__)}/tv/pedido"
 require "#{File.dirname(__FILE__)}/nonna_api"
+require "#{File.dirname(__FILE__)}/errors/nonna_error"
 
 require_relative '../app/presentador_menus.rb'
 require_relative '../app/tv/menu.rb'
@@ -59,8 +60,11 @@ class Routes
   end
 
   on_message_pattern %r{/registrar (?<datos>.*)} do |bot, message, args|
-    respuesta = NonnaApi.new.registrar_usuario(message, args)
-
+    begin
+      respuesta = NonnaApi.new.registrar_usuario(message, args)
+    rescue StandardError => e
+      respuesta = e.message
+    end
     bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 

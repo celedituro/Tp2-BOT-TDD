@@ -10,28 +10,33 @@ class NonnaApi
     body_hash['version']
   end
 
-  # rubocop:disable Metrics/AbcSize
+  def validate(datos)
+    raise NonnaError, 'Error: faltan campos para completar el registro' if datos.length != 3
+  end
+
+  def status_code(response)
+    case response.status
+    when HTTP_CONFLICTO
+      raise NonnaError, 'Error: el telefono ya está en uso'
+    when HTTP_PARAMETROS_INCORRECTO
+      raise NonnaError, 'Error: faltan campos para completar el registro'
+    else
+      body_hash = JSON.parse(response.body)
+      nombre = body_hash['nombre']
+      "Bienvenido #{nombre}!"
+    end
+  end
+
   def registrar_usuario(mensaje, argumentos)
     datos = argumentos['datos'].split(',')
-    if datos.length != 3
-      text = 'Error: faltan campos para completar el registro'
-    else
+    begin
+      validate(datos)
       body = { nombre: datos[0], direccion: datos[1], telefono: datos[2], id: mensaje.chat.id.to_s }
       response = Faraday.post("#{URL}/registrar", body.to_json, 'Content-Type' => 'application/json')
-
-      case response.status
-      when HTTP_CONFLICTO
-        text = 'Error: el telefono ya está en uso'
-      when HTTP_PARAMETROS_INCORRECTO
-        text = 'Error: faltan campos para completar el registro'
-      else
-        body_hash = JSON.parse(response.body)
-        nombre = body_hash['nombre']
-        text = "Bienvenido #{nombre}!"
-      end
+      text = status_code(response)
+      return text
+    rescue NonnaError => e
+      raise NonnaError, e.message
     end
-
-    text
   end
-  # rubocop:enable Metrics/AbcSize
 end

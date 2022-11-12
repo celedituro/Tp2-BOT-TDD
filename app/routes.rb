@@ -2,6 +2,7 @@ require "#{File.dirname(__FILE__)}/../lib/routing"
 require "#{File.dirname(__FILE__)}/../lib/version"
 require "#{File.dirname(__FILE__)}/tv/series"
 require "#{File.dirname(__FILE__)}/tv/pedido"
+require "#{File.dirname(__FILE__)}/nonna_api"
 
 require_relative '../app/presentador_menus.rb'
 require_relative '../app/tv/menu.rb'
@@ -13,7 +14,6 @@ HTTP_PARAMETROS_INCORRECTO = 400
 HTTP_NO_AUTORIZADO = 401
 URL = ENV['API_URL'] || 'http://webapp:3000'
 
-# rubocop:disable Metrics/ClassLength
 class Routes
   include Routing
 
@@ -27,15 +27,6 @@ class Routes
 
   on_message '/stop' do |bot, message|
     bot.api.send_message(chat_id: message.chat.id, text: "Chau, #{message.from.username}")
-  end
-
-  on_message '/tv' do |bot, message|
-    kb = Tv::Series.all.map do |tv_serie|
-      Telegram::Bot::Types::InlineKeyboardButton.new(text: tv_serie.name, callback_data: tv_serie.id.to_s)
-    end
-    markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
-
-    bot.api.send_message(chat_id: message.chat.id, text: 'Quien se queda con el trono?', reply_markup: markup)
   end
 
   on_message '/busqueda_centro' do |bot, message|
@@ -52,11 +43,6 @@ class Routes
     bot.api.send_message(chat_id: message.chat.id, text: response)
   end
 
-  on_response_to 'Quien se queda con el trono?' do |bot, message|
-    response = Tv::Series.handle_response message.data
-    bot.api.send_message(chat_id: message.message.chat.id, text: response)
-  end
-
   on_message '/version' do |bot, message|
     bot.api.send_message(chat_id: message.chat.id, text: Version.current)
   end
@@ -70,10 +56,12 @@ class Routes
   end
 
   on_message '/version_api' do |bot, message|
-    response = Faraday.get("#{URL}/health")
-    body_hash = JSON.parse(response.body)
+    # response = Faraday.get("#{URL}/health")
+    # body_hash = JSON.parse(response.body)
 
-    bot.api.send_message(chat_id: message.chat.id, text: body_hash['version'])
+    respuesta = NonnaApi.new.obtener_version
+
+    bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 
   on_message_pattern %r{/registrar (?<datos>.*)} do |bot, message, args|
@@ -149,4 +137,3 @@ class Routes
     bot.api.send_message(chat_id: message.chat.id, text: text)
   end
 end
-# rubocop:enable Metrics/ClassLength

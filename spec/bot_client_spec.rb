@@ -155,18 +155,6 @@ describe 'BotClient' do
 
     app.run_once
   end
-  # rubocop:disable RSpec/ExampleLength
-  it 'should get a /tv message and respond with an inline keyboard' do
-    token = 'fake_token'
-    markup = '[{"text":"Jon Snow","callback_data":"1"}],[{"text":"Daenerys Targaryen","callback_data":"2"}],[{"text":"Ned Stark","callback_data":"3"}]'
-    when_i_send_text(token, '/tv')
-    then_i_get_keyboard_message(token, 'Quien se queda con el trono?', markup)
-
-    app = BotClient.new(token)
-
-    app.run_once
-  end
-  # rubocop:enable RSpec/ExampleLength
 
   it 'should get an unknown message message and respond with Do not understand' do
     token = 'fake_token'

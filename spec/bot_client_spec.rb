@@ -277,4 +277,16 @@ describe 'BotClient' do
     BotClient.new(token).run_once
   end
   # rubocop:enable RSpec/ExampleLength
+
+  # rubocop:disable RSpec/ExampleLength, Metrics/LineLength
+  it 'debo obtener mis pedidos al enviar /pedidos' do
+    token = 'fake_token'
+    pedidos = [{ 'id_pedido' => 1, 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100, 'estado' => 'entregado' }, { 'id_pedido' => 2, 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100, 'estado' => 'en preparacion' }, { 'id_pedido' => 4, 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250, 'estado' => 'recibido' }]
+    mock_get_request_api(pedidos, '/pedidos/141733544', 200)
+
+    when_i_send_text(token, '/pedidos')
+    then_i_get_text(token, PresentadorPedidos.new.presentar_pedidos(pedidos))
+    BotClient.new(token).run_once
+  end
+  # rubocop:enable RSpec/ExampleLength, Metrics/LineLength
 end

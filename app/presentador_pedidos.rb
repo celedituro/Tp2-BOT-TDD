@@ -8,6 +8,6 @@ class PresentadorPedidos
   end
 
   def generar_pedido(pedido)
-    "Pedido #{pedido['id_pedido']}, #{pedido['id']}-#{pedido['nombre']} ($#{pedido['precio']}), estado: #{pedido['estado']}\n "
+    "Pedido #{pedido['id_pedido']}\n\t\tMenu: #{pedido['nombre_menu']}\n\t\tPrecio: $#{pedido['precio']}\n\t\tEstado: #{pedido['estado']}\n\n"
   end
 end

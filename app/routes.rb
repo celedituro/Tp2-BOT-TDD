@@ -6,6 +6,7 @@ require "#{File.dirname(__FILE__)}/nonna_api"
 require "#{File.dirname(__FILE__)}/errors/nonna_error"
 
 require_relative '../app/presentador_menus.rb'
+require_relative '../app/presentador_pedidos.rb'
 require_relative '../app/tv/menu.rb'
 
 HTTP_NO_AUTORIZADO = 401

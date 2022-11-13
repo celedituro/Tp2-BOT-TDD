@@ -59,8 +59,8 @@ class NonnaApi
     JSON.parse(response.body)
   end
 
-  def calificar(argumentos)
-    body = { id_pedido: argumentos['id_pedido'], calificacion: argumentos['calificacion'] }
+  def calificar(mensaje, argumentos)
+    body = { id_usuario: mensaje.chat.id, id_pedido: argumentos['id_pedido'], calificacion: argumentos['calificacion'] }
     response = Faraday.patch("#{URL}/calificacion", body.to_json, 'Content-Type' => 'application/json')
     body_hash = JSON.parse(response.body)
     "Su pedido #{body_hash['id_pedido']} fue calificado!"

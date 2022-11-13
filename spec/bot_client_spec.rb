@@ -288,7 +288,7 @@ describe 'BotClient' do
   # rubocop:enable Metrics/LineLength
   it 'debo obtener "Su pedido 123 fue calificado!" al enviar /calificar 123,4' do
     token = 'fake_token'
-    mock_patch_request_api({ 'id_pedido' => 123, 'calificacion' => 4 }, '/calificacion', 200)
+    mock_patch_request_api({ 'id_usuario' => 15, 'id_pedido' => 123, 'calificacion' => 4 }, '/calificacion', 200)
 
     when_i_send_text(token, '/calificar 123,4')
     then_i_get_text(token, 'Su pedido 123 fue calificado!')

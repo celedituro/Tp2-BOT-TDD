@@ -115,7 +115,7 @@ class Routes
   end
 
   on_message_pattern %r{/calificar (?<id_pedido>.*),(?<calificacion>.*)} do |bot, message, args|
-    text = NonnaApi.new.calificar(args)
+    text = NonnaApi.new.calificar(message, args)
     bot.api.send_message(chat_id: message.chat.id, text: text)
   end
 end

@@ -110,8 +110,12 @@ class Routes
 
   on_message '/pedidos' do |bot, message|
     pedidos = NonnaApi.new.pedidos(message)
-    text = PresentadorPedidos.new.presentar_pedidos(pedidos)
-    bot.api.send_message(chat_id: message.chat.id, text: text)
+    if pedidos.empty?
+      bot.api.send_message(chat_id: message.chat.id, text: "Error")
+    else
+      text = PresentadorPedidos.new.presentar_pedidos(pedidos)
+      bot.api.send_message(chat_id: message.chat.id, text: text)
+    end
   end
 
   on_message_pattern %r{/calificar (?<id_pedido>.*),(?<calificacion>.*)} do |bot, message, args|

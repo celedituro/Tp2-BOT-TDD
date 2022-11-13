@@ -111,7 +111,7 @@ class Routes
   on_message '/pedidos' do |bot, message|
     pedidos = NonnaApi.new.pedidos(message)
     if pedidos.empty?
-      bot.api.send_message(chat_id: message.chat.id, text: "Error")
+      bot.api.send_message(chat_id: message.chat.id, text: 'Error')
     else
       text = PresentadorPedidos.new.presentar_pedidos(pedidos)
       bot.api.send_message(chat_id: message.chat.id, text: text)

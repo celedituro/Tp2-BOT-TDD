@@ -214,8 +214,6 @@ describe 'BotClient' do
 
     BotClient.new(token).run_once
   end
-
-  # rubocop:disable RSpec/ExampleLength
   it 'debo obtener una lista con los menus disponibles al enviar /menus' do
     token = 'fake_token'
     menus = [{ 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100 }, { 'id' => 2, 'nombre' => 'Menu parejas', 'precio' => 175 }, { 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250 }]
@@ -276,9 +274,8 @@ describe 'BotClient' do
     then_i_get_text(token, Pedido.new.manejar_respuesta(pedido))
     BotClient.new(token).run_once
   end
-  # rubocop:enable RSpec/ExampleLength
 
-  # rubocop:disable RSpec/ExampleLength, Metrics/LineLength
+  # rubocop:disable Metrics/LineLength
   it 'debo obtener mis pedidos al enviar /pedidos' do
     token = 'fake_token'
     pedidos = [{ 'id_pedido' => 1, 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100, 'estado' => 'entregado' }, { 'id_pedido' => 2, 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100, 'estado' => 'en preparacion' }, { 'id_pedido' => 4, 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250, 'estado' => 'recibido' }]
@@ -288,5 +285,13 @@ describe 'BotClient' do
     then_i_get_text(token, PresentadorPedidos.new.presentar_pedidos(pedidos))
     BotClient.new(token).run_once
   end
-  # rubocop:enable RSpec/ExampleLength, Metrics/LineLength
+  # rubocop:enable Metrics/LineLength
+  it 'debo obtener "Su pedido 123 fue calificado!" al enviar /calificar 123,4' do
+    token = 'fake_token'
+    mock_patch_request_api({ 'id_pedido' => 123, 'calificacion' => 4 }, '/calificacion', 200)
+
+    when_i_send_text(token, '/calificar 123,4')
+    then_i_get_text(token, 'Su pedido 123 fue calificado!')
+    BotClient.new(token).run_once
+  end
 end

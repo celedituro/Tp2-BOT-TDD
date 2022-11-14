@@ -1,5 +1,16 @@
-Telegram Bot Example
+Telegram Bot Salta
 ====================
+
+### Integrantes del grupo
+* [Dituro Celeste](https://gitlab.com/celedituro)
+* [Lopez Victoria Abril](https://gitlab.com/vickyylopezz)
+* [Pfaab Ivan Lautaro](https://gitlab.com/ipfaab)
+* [Villores Alejo](https://gitlab.com/alejovillores)
+
+
+### Ambientes:
+`test`@FiubaMemo2Tp2SaltaTestBot\
+`produccion` @FiubaMemo2Tp2SaltaProdBot
 
 1. Registrar un nuevo bot con el BotFather de Telegram
 
@@ -13,13 +24,6 @@ Telegram Bot Example
 
 4. Levantar la app localmente con `ruby app.rb`
 
-# Deploy a Heroku
-
-1. Crear la app en heroku
-2. Agregar el remote `heroku git:remote -a <app_name>`
-3. Hacer deploy con `git push heroku master`
-4. Ir a los settings y agregar una nueva variable de entorno `TELEGRAM_TOKEN` con el valor del token
-5. Ir a los Dynos, editar los dynos y confirmar la activación (ver [imagen](https://www.dropbox.com/s/h2hqimu7pbsqrhj/Screenshot%202019-05-15%2021.38.07.png?dl=0))
 
 # Testing
 

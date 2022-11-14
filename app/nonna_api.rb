@@ -4,6 +4,7 @@ URL = ENV['API_URL'] || 'http://webapp:3000'
 
 HTTP_CONFLICTO = 409
 HTTP_PARAMETROS_INCORRECTO = 400
+HTTP_NO_AUTORIZADO = 401
 
 class NonnaApi
   def obtener_version
@@ -12,8 +13,10 @@ class NonnaApi
     body_hash['version']
   end
 
-  def obtener_menus
-    response = Faraday.get("#{URL}/menus")
+  def obtener_menus(id)
+    response = Faraday.get("#{URL}/menus/#{id}")
+    raise NonnaError, 'No podemos procesar tu consulta, necesitas registrarte primero' if response.status == HTTP_NO_AUTORIZADO
+
     JSON.parse(response.body)
   end
 

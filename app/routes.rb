@@ -70,21 +70,31 @@ class Routes
   end
 
   on_message '/menus' do |bot, message|
-    menus = NonnaApi.new.obtener_menus
-    respuesta = PresentadorMenus.new.presentar_menus(menus)
+    begin
+      menus = NonnaApi.new.obtener_menus(message.chat.id)
+      respuesta = PresentadorMenus.new.presentar_menus(menus)
+    rescue StandardError => e
+      respuesta = e.message
+    end
     bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 
   on_message '/pedir' do |bot, message|
-    menus = NonnaApi.new.obtener_menus
+    begin
+      menus = NonnaApi.new.obtener_menus(message.chat.id)
 
-    presentador = PresentadorMenus.new
-    kb = menus.map do |menu|
-      Telegram::Bot::Types::InlineKeyboardButton.new(text: presentador.generar_menu(menu), callback_data: menu['id'].to_s)
+      presentador = PresentadorMenus.new
+      kb = menus.map do |menu|
+        Telegram::Bot::Types::InlineKeyboardButton.new(text: presentador.generar_menu(menu), callback_data: menu['id'].to_s)
+      end
+      markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
+      text = 'Que menu desea pedir?'
+    rescue NonnaError => e
+      text = e.message
+      markup = nil
     end
-    markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
 
-    bot.api.send_message(chat_id: message.chat.id, text: 'Que menu desea pedir?', reply_markup: markup)
+    bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: markup)
   end
 
   on_response_to 'Que menu desea pedir?' do |bot, message|

@@ -214,11 +214,22 @@ describe 'BotClient' do
 
     BotClient.new(token).run_once
   end
+
+  it 'debo obtener un mensaje de error al enviar /menus con un id no registrado' do
+    token = 'fake_token'
+
+    mock_get_request_api([], '/menus/141733544', 401)
+
+    when_i_send_text(token, '/menus')
+    then_i_get_text(token, 'No podemos procesar tu consulta, necesitas registrarte primero')
+    BotClient.new(token).run_once
+  end
+
   it 'debo obtener una lista con los menus disponibles al enviar /menus' do
     token = 'fake_token'
     menus = [{ 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100 }, { 'id' => 2, 'nombre' => 'Menu parejas', 'precio' => 175 }, { 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250 }]
 
-    mock_get_request_api(menus, '/menus', 200)
+    mock_get_request_api(menus, '/menus/141733544', 200)
 
     when_i_send_text(token, '/menus')
     then_i_get_text(token, PresentadorMenus.new.presentar_menus(menus))
@@ -228,7 +239,7 @@ describe 'BotClient' do
   it 'al enviar /pedir debo obtener las opciones de menus disponibles' do
     token = 'fake_token'
     menus = [{ 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100 }, { 'id' => 2, 'nombre' => 'Menu parejas', 'precio' => 175 }, { 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250 }]
-    mock_get_request_api(menus, '/menus', 200)
+    mock_get_request_api(menus, '/menus/141733544', 200)
 
     markup = '[{"text":"1-Menu individual ($100)\n","callback_data":"1"}],[{"text":"2-Menu parejas ($175)\n","callback_data":"2"}],[{"text":"3-Menu familiar ($250)\n","callback_data":"3"}]'
 

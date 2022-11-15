@@ -71,7 +71,7 @@ def then_i_get_keyboard_message(token, message_text, markup)
   stub_request(:post, "https://api.telegram.org/bot#{token}/sendMessage")
     .with(
       body: { 'chat_id' => '141733544',
-              'reply_markup' => "{\"inline_keyboard\":[#{markup}]}",
+              'reply_markup' => markup,
               'text' => message_text }
     )
     .to_return(status: 200, body: body.to_json, headers: {})
@@ -244,11 +244,21 @@ describe 'BotClient' do
     markup = '[{"text":"1-Menu individual ($100)\n","callback_data":"1"}],[{"text":"2-Menu parejas ($175)\n","callback_data":"2"}],[{"text":"3-Menu familiar ($250)\n","callback_data":"3"}]'
 
     when_i_send_text(token, '/pedir')
-    then_i_get_keyboard_message(token, 'Que menu desea pedir?', markup)
+
+    then_i_get_keyboard_message(token, 'Que menu desea pedir?', "{\"inline_keyboard\":[#{markup}]}")
 
     app = BotClient.new(token)
 
     app.run_once
+  end
+
+  it 'debo obtener un mensaje de error al enviar /pedir con un id usuario no registrado' do
+    token = 'fake_token'
+
+    mock_get_request_api([], '/menus/141733544', 401)
+    when_i_send_text(token, '/pedir')
+    then_i_get_keyboard_message(token, 'No podemos procesar tu consulta, necesitas registrarte primero', nil)
+    BotClient.new(token).run_once
   end
 
   it 'should get a "Que menu desea pedir?" message and respond with' do

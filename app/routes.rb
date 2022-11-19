@@ -6,6 +6,8 @@ require "#{File.dirname(__FILE__)}/errors/nonna_error"
 
 require_relative '../app/presentador_menus.rb'
 require_relative '../app/presentador_pedidos.rb'
+require_relative '../app/presentador_equipo.rb'
+require_relative '../app/presentador_errores.rb'
 require_relative '../app/tv/menu.rb'
 
 HTTP_NO_AUTORIZADO = 401
@@ -28,7 +30,7 @@ class Routes
   end
 
   on_message '/equipo' do |bot, message|
-    bot.api.send_message(chat_id: message.chat.id, text: 'Hola, somos el equipo Salta')
+    bot.api.send_message(chat_id: message.chat.id, text: PresentadorEquipo.new.presentar_equipo)
   end
 
   default do |bot, message|
@@ -45,7 +47,7 @@ class Routes
     begin
       respuesta = NonnaApi.new.registrar_usuario(message, args)
     rescue StandardError => e
-      respuesta = e.message
+      respuesta = PresentadorErrores.new.presentar(e.message)
     end
     bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
@@ -55,7 +57,7 @@ class Routes
       menus = NonnaApi.new.obtener_menus(message.chat.id)
       respuesta = PresentadorMenus.new.presentar_menus(menus)
     rescue StandardError => e
-      respuesta = e.message
+      respuesta = PresentadorErrores.new.presentar(e.message)
     end
     bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
@@ -69,9 +71,9 @@ class Routes
         Telegram::Bot::Types::InlineKeyboardButton.new(text: presentador.generar_menu(menu), callback_data: menu['id'].to_s)
       end
       markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
-      text = 'Que menu desea pedir?'
+      text = PresentadorMenus.new.pregunta_menu
     rescue NonnaError => e
-      text = e.message
+      text = PresentadorErrores.new.presentar(e.message)
       markup = nil
     end
 
@@ -82,7 +84,7 @@ class Routes
     begin
       respuesta = NonnaApi.new.pedir_menu(message)
     rescue StandardError => e
-      respuesta = e.message
+      respuesta = PresentadorErrores.new.presentar(e.message)
     end
     bot.api.send_message(chat_id: message.message.chat.id, text: respuesta)
   end
@@ -92,7 +94,7 @@ class Routes
       pedidos = NonnaApi.new.consultar_pedido(args['id_pedido'])
       respuesta = Pedido.new.manejar_respuesta(pedidos)
     rescue NonnaError => e
-      respuesta = e.message
+      respuesta = PresentadorErrores.new.presentar(e.message)
     end
     bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
@@ -117,7 +119,7 @@ class Routes
     begin
       text = NonnaApi.new.calificar_pedido(message, args)
     rescue NonnaError => e
-      text = e.message
+      text = PresentadorErrores.new.presentar(e.message)
     end
     bot.api.send_message(chat_id: message.chat.id, text: text)
   end

@@ -274,6 +274,16 @@ describe 'BotClient' do
     BotClient.new(token).run_once
   end
 
+  it 'debo obtener No se encuentra el pedido 3 al enviar /consultar 3' do
+    token = 'fake_token'
+
+    mock_get_request_api({ 'message' => 'Not found' }, '/pedido/3', 404)
+
+    when_i_send_text(token, '/consultar 3')
+    then_i_get_text(token, 'No se encuentra el pedido 3')
+    BotClient.new(token).run_once
+  end
+
   it 'debo obtener un cambio de estado en mi pedido cuando realizo un pedido y luego lo cancelo' do
     token = 'fake_token'
     pedido_recibido = { 'id_pedido' => 3, 'estado' => 'recibido' }

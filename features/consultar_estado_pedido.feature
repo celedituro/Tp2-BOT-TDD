@@ -17,3 +17,8 @@ Escenario: Cliente consulta un pedido realizado
   Cuando ingreso "/cancelar 4"
   Y ingreso "/consultar_pedido 4"
   Entonces obtengo el mensaje "Su pedido 4 esta cancelado"
+
+Escenario: Cliente consulta un pedido no realizado
+Dado que no realizo un pedido
+Cuando ingreso "/consultar 3"
+Entonces obtengo el mensaje de error "No se encuentra el pedido 3"

@@ -88,8 +88,12 @@ class Routes
   end
 
   on_message_pattern %r{/consultar (?<id_pedido>.*)} do |bot, message, args|
-    pedidos = NonnaApi.new.consultar_pedido(args['id_pedido'])
-    respuesta = Pedido.new.manejar_respuesta(pedidos)
+    begin
+      pedidos = NonnaApi.new.consultar_pedido(args['id_pedido'])
+      respuesta = Pedido.new.manejar_respuesta(pedidos)
+    rescue NonnaError => e
+      respuesta = e.message
+    end
     bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 

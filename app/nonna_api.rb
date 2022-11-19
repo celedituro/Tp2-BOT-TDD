@@ -5,6 +5,7 @@ URL = ENV['API_URL'] || 'http://webapp:3000'
 HTTP_CONFLICTO = 409
 HTTP_PARAMETROS_INCORRECTO = 400
 HTTP_NO_AUTORIZADO = 401
+HTTP_NO_ENCONTRADO = 404
 
 class NonnaApi
   def obtener_version
@@ -48,6 +49,8 @@ class NonnaApi
 
   def consultar_pedido(id_pedido)
     response = Faraday.get("#{URL}/pedido/#{id_pedido}")
+    raise NonnaError, "No se encuentra el pedido #{id_pedido}" if response.status == HTTP_NO_ENCONTRADO
+
     JSON.parse(response.body)
   end
 

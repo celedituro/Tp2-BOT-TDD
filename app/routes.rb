@@ -10,7 +10,7 @@ require_relative '../app/presentador_equipo.rb'
 require_relative '../app/presentador_errores.rb'
 require_relative '../app/tv/menu.rb'
 
-HTTP_NO_AUTORIZADO = 401
+DEFAULT_MESSAGE = 'Uh? No te entiendo! Me repetis la pregunta?'.freeze
 
 URL = ENV['API_URL'] || 'http://webapp:3000'
 
@@ -34,7 +34,7 @@ class Routes
   end
 
   default do |bot, message|
-    bot.api.send_message(chat_id: message.chat.id, text: 'Uh? No te entiendo! Me repetis la pregunta?')
+    bot.api.send_message(chat_id: message.chat.id, text: DEFAULT_MESSAGE)
   end
 
   on_message '/version_api' do |bot, message|

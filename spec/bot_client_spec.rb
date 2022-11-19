@@ -123,17 +123,6 @@ describe 'BotClient' do
     BotClient.new(token).run_once
   end
 
-  it 'should get a /say_hi message and respond with Hola Emilio' do
-    token = 'fake_token'
-
-    when_i_send_text(token, '/say_hi Emilio')
-    then_i_get_text(token, 'Hola, Emilio')
-
-    app = BotClient.new(token)
-
-    app.run_once
-  end
-
   it 'should get a /start message and respond with Hola' do
     token = 'fake_token'
 
@@ -336,6 +325,15 @@ describe 'BotClient' do
 
     when_i_send_text(token, '/calificar 123,4')
     then_i_get_text(token, 'Su pedido 123 fue calificado!')
+    BotClient.new(token).run_once
+  end
+
+  it 'debo obtener "Error: solo se pueden calificar pedidos entregados o cancelados" al enviar /calificar 123,4' do
+    token = 'fake_token'
+    mock_patch_request_api({ 'message' => 'Unauthorized' }, '/calificacion', 401)
+
+    when_i_send_text(token, '/calificar 123,4')
+    then_i_get_text(token, 'Error: solo se pueden calificar pedidos entregados o cancelados')
     BotClient.new(token).run_once
   end
 end

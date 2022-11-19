@@ -1,6 +1,5 @@
 require "#{File.dirname(__FILE__)}/../lib/routing"
 require "#{File.dirname(__FILE__)}/../lib/version"
-require "#{File.dirname(__FILE__)}/tv/series"
 require "#{File.dirname(__FILE__)}/tv/pedido"
 require "#{File.dirname(__FILE__)}/nonna_api"
 require "#{File.dirname(__FILE__)}/errors/nonna_error"
@@ -20,26 +19,8 @@ class Routes
     bot.api.send_message(chat_id: message.chat.id, text: "Hola, #{message.from.first_name}")
   end
 
-  on_message_pattern %r{/say_hi (?<name>.*)} do |bot, message, args|
-    bot.api.send_message(chat_id: message.chat.id, text: "Hola, #{args['name']}")
-  end
-
   on_message '/stop' do |bot, message|
     bot.api.send_message(chat_id: message.chat.id, text: "Chau, #{message.from.username}")
-  end
-
-  on_message '/busqueda_centro' do |bot, message|
-    kb = [
-      Telegram::Bot::Types::KeyboardButton.new(text: 'Compartime tu ubicacion', request_location: true)
-    ]
-    markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: kb)
-    bot.api.send_message(chat_id: message.chat.id, text: 'Busqueda por ubicacion', reply_markup: markup)
-  end
-
-  on_location_response do |bot, message|
-    response = "Ubicacion es Lat:#{message.location.latitude} - Long:#{message.location.longitude}"
-    puts response
-    bot.api.send_message(chat_id: message.chat.id, text: response)
   end
 
   on_message '/version' do |bot, message|
@@ -129,7 +110,11 @@ class Routes
   end
 
   on_message_pattern %r{/calificar (?<id_pedido>.*),(?<calificacion>.*)} do |bot, message, args|
-    text = NonnaApi.new.calificar(message, args)
+    begin
+      text = NonnaApi.new.calificar_pedido(message, args)
+    rescue NonnaError => e
+      text = e.message
+    end
     bot.api.send_message(chat_id: message.chat.id, text: text)
   end
 end

@@ -62,14 +62,25 @@ class NonnaApi
     JSON.parse(response.body)
   end
 
-  def calificar(mensaje, argumentos)
+  def calificar_pedido(mensaje, argumentos)
     body = { id_usuario: mensaje.chat.id, id_pedido: argumentos['id_pedido'], calificacion: argumentos['calificacion'] }
     response = Faraday.patch("#{URL}/calificacion", body.to_json, 'Content-Type' => 'application/json')
-    body_hash = JSON.parse(response.body)
-    "Su pedido #{body_hash['id_pedido']} fue calificado!"
+    calificar(response)
+  rescue NonnaError => e
+    raise NonnaError, e.message
   end
 
   private
+
+  def calificar(response)
+    case response.status
+    when HTTP_NO_AUTORIZADO
+      raise NonnaError, 'Error: solo se pueden calificar pedidos entregados o cancelados'
+    else
+      body_hash = JSON.parse(response.body)
+      "Su pedido #{body_hash['id_pedido']} fue calificado!"
+    end
+  end
 
   def registrar(response)
     case response.status

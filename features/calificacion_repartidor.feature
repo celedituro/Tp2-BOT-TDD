@@ -43,3 +43,25 @@ Escenario: Cliente califica al repartidor de un pedido en camino
     Y recibo "Su pedido 4 esta en camino"
     Cuando ingreso "/calificar 4,3"
     Entonces recibo "No puede calificar un pedido en camino"
+
+Escenario: Cliente califica al repartidor con campos faltantes
+    Dado que ingreso "/registrar pepe, Cucha Cucha 1234, 5123-1234"
+    Y me registro
+    Y se muestra el mensaje "Bienvenido pepe!"
+    Y selecciono la opción "1 - Menú individual ($100)"
+    Y recibo "Su pedido de Menú individual fue recibido con éxito. Su número de pedido es : "4"
+    Y ingreso "/consultar 4"
+    Y recibo "Su pedido 4 esta entregado"
+    Cuando ingreso "/calificar 4"
+    Entonces recibo "Error: faltan campos para completar la calificacion"
+
+Escenario: Cliente califica al repartidor con campos faltantes
+    Dado que ingreso "/registrar pepe, Cucha Cucha 1234, 5123-1234"
+    Y me registro
+    Y se muestra el mensaje "Bienvenido pepe!"
+    Y selecciono la opción "1 - Menú individual ($100)"
+    Y recibo "Su pedido de Menú individual fue recibido con éxito. Su número de pedido es : "4"
+    Y ingreso "/consultar 4"
+    Y recibo "Su pedido 4 esta entregado"
+    Cuando ingreso "/calificar 4,10"
+    Entonces recibo "Error: la calificacion debe ser de 1 a 5"

@@ -26,6 +26,10 @@ class NonnaApi
     raise NonnaError, PresentadorErrores.new.presentar_registracion_campos_faltantes if datos.length != 3
   end
 
+  def validar_calificacion(datos)
+    raise NonnaError, PresentadorErrores.new.presentar_calificacion_campos_faltantes if datos.length != 2
+  end
+
   def pedir_menu(mensaje)
     body = { id_usuario: mensaje.message.chat.id.to_s, id_menu: Integer(mensaje.data) }
     response = Faraday.post("#{URL}/pedido", body.to_json, 'Content-Type' => 'application/json')
@@ -67,7 +71,9 @@ class NonnaApi
   end
 
   def calificar_pedido(mensaje, argumentos)
-    body = { id_usuario: mensaje.chat.id, id_pedido: argumentos['id_pedido'], calificacion: argumentos['calificacion'] }
+    datos = argumentos['datos'].split(',')
+    validar_calificacion(datos)
+    body = { id_usuario: mensaje.chat.id, id_pedido: datos[0], calificacion: datos[1] }
     response = Faraday.patch("#{URL}/calificacion", body.to_json, 'Content-Type' => 'application/json')
     calificar(response)
   rescue NonnaError => e
@@ -80,6 +86,8 @@ class NonnaApi
     case response.status
     when HTTP_NO_AUTORIZADO
       raise NonnaError, PresentadorErrores.new.presentar_califacion_tipo_pedido
+    when HTTP_PARAMETROS_INCORRECTO
+      raise NonnaError, PresentadorErrores.new.presentar_calificacion_rango_incorrecto
     else
       body_hash = JSON.parse(response.body)
       PresentadorPedidos.new.presentar_pedido_exitoso(body_hash['id_pedido'])

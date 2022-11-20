@@ -346,4 +346,14 @@ describe 'BotClient' do
     then_i_get_text(token, 'Error: solo se pueden calificar pedidos entregados o cancelados')
     BotClient.new(token).run_once
   end
+
+  it 'debo obtener "Error: faltan campos para completar la calificacion" al enviar /calificar 123' do
+    token = 'fake_token'
+    mock_patch_request_api({ 'message' => 'Unauthorized' }, '/calificacion', 401)
+
+    when_i_send_text(token, '/calificar 123')
+    then_i_get_text(token, 'Error: faltan campos para completar la calificacion')
+
+    BotClient.new(token).run_once
+  end
 end

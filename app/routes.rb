@@ -113,7 +113,7 @@ class Routes
     end
   end
 
-  on_message_pattern %r{/calificar (?<id_pedido>.*),(?<calificacion>.*)} do |bot, message, args|
+  on_message_pattern %r{/calificar (?<datos>.*)} do |bot, message, args|
     begin
       text = NonnaApi.new.calificar_pedido(message, args)
     rescue NonnaError => e

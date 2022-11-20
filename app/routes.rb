@@ -12,6 +12,7 @@ require_relative '../app/tv/menu.rb'
 
 DEFAULT_MESSAGE = 'Uh? No te entiendo! Me repetis la pregunta?'.freeze
 
+# rubocop: disable Metrics/ClassLength
 class Routes
   include Routing
 
@@ -121,4 +122,19 @@ class Routes
     end
     bot.api.send_message(chat_id: message.chat.id, text: text)
   end
+
+  on_message '/busqueda_centro' do |bot, message|
+    kb = [
+      Telegram::Bot::Types::KeyboardButton.new(text: 'Compartime tu ubicacion', request_location: true)
+    ]
+    markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: kb)
+    bot.api.send_message(chat_id: message.chat.id, text: 'Busqueda por ubicacion', reply_markup: markup)
+  end
+
+  on_location_response do |bot, message|
+    response = "Ubicacion es Lat:#{message.location.latitude} - Long:#{message.location.longitude}"
+    puts response
+    bot.api.send_message(chat_id: message.chat.id, text: response)
+  end
 end
+# rubocop: enable Metrics/ClassLength

@@ -199,7 +199,7 @@ describe 'BotClient' do
     mock_post_request_api({ "nombre": 'Alejo', "direccion": '9 de Julio 222', "telefono": '5435-4535', "id": 123 }, '/registrar', 409)
 
     when_i_send_text(token, '/registrar Alejo, 9 de Julio 222, 5435-4535')
-    then_i_get_text(token, 'Error: el telefono ya está en uso')
+    then_i_get_text(token, 'Error: el usuario ya esta registrado')
 
     BotClient.new(token).run_once
   end

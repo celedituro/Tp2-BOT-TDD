@@ -97,7 +97,7 @@ class NonnaApi
   def registrar(response)
     case response.status
     when HTTP_CONFLICTO
-      raise NonnaError, PresentadorErrores.new.presentar_registracion_telefono
+      raise NonnaError, PresentadorErrores.new.presentar_registracion_id_usuario
     when HTTP_PARAMETROS_INCORRECTO
       raise NonnaError, PresentadorErrores.new.presentar_registracion_campos_faltantes
     else

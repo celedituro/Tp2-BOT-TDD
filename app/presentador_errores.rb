@@ -5,6 +5,7 @@ class PresentadorErrores
   MSG_ERROR_TIPO_PEDIDO = 'Error: solo se pueden calificar pedidos entregados o cancelados'.freeze
   MSG_ERROR_FALTAN_CAMPOS_CALIFICACION = 'Error: faltan campos para completar la calificacion'.freeze
   MSG_ERROR_CALIFICACION_RANGO_INCORRECTO = 'Error: la calificacion tiene que ser entre 1 y 5'.freeze
+  MSG_ERROR_CANCELACION_ESTADO_INCORRECTO = 'Error: un pedido solo se puede cancelar en estado recibido o en preparación'.freeze
 
   def presentar(error)
     error
@@ -36,5 +37,9 @@ class PresentadorErrores
 
   def presentar_calificacion_rango_incorrecto
     presentar(MSG_ERROR_CALIFICACION_RANGO_INCORRECTO)
+  end
+
+  def presentar_cancelacion_estado_incorrecto
+    presentar(MSG_ERROR_CANCELACION_ESTADO_INCORRECTO)
   end
 end

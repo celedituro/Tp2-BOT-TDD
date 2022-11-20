@@ -1,6 +1,3 @@
-require_relative '../app/presentador_menus.rb'
-require_relative '../app/presentador_errores.rb'
-
 URL = ENV['API_URL'] || 'http://webapp:3000'
 
 HTTP_CONFLICTO = 409
@@ -59,9 +56,9 @@ class NonnaApi
     JSON.parse(response.body)
   end
 
-  def cancelar(id_pedido)
+  def cancelar_pedido(id_pedido)
     response = Faraday.patch("#{URL}/cancelacion?id=#{id_pedido}")
-    JSON.parse(response.body)
+    cancelar(response)
   end
 
   def pedidos(mensaje)
@@ -114,6 +111,16 @@ class NonnaApi
     else
       body_hash = JSON.parse(response.body)
       Menu.new.manejar_respuesta(body_hash['nombre_menu'], body_hash['id_pedido'])
+    end
+  end
+
+  def cancelar(respuesta)
+    case respuesta.status
+    when HTTP_NO_AUTORIZADO
+      raise NonnaError, PresentadorErrores.new.presentar_cancelacion_estado_incorrecto
+    else
+      body = JSON.parse(respuesta.body)
+      Pedido.new.manejar_respuesta(body)
     end
   end
 end

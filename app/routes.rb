@@ -99,9 +99,12 @@ class Routes
   end
 
   on_message_pattern %r{/cancelar (?<id_pedido>.*)} do |bot, message, args|
-    pedido_cancelado = NonnaApi.new.cancelar(args['id_pedido'])
-    text = Pedido.new.manejar_respuesta(pedido_cancelado)
-    bot.api.send_message(chat_id: message.chat.id, text: text)
+    begin
+      respuesta = NonnaApi.new.cancelar_pedido(args['id_pedido'])
+    rescue NonnaError => e
+      respuesta = PresentadorErrores.new.presentar(e.message)
+    end
+    bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 
   on_message '/pedidos' do |bot, message|

@@ -318,6 +318,16 @@ describe 'BotClient' do
     BotClient.new(token).run_once
   end
 
+  it 'debo obtener "Error: un pedido solo se puede cancelar en estado recibido o en preparación" al enviar /cancelar 4' do
+    token = 'fake_token'
+
+    mock_patch_request_api([], '/cancelacion?id=4', 401)
+
+    when_i_send_text(token, '/cancelar 4')
+    then_i_get_text(token, PresentadorErrores.new.presentar_cancelacion_estado_incorrecto)
+    BotClient.new(token).run_once
+  end
+
   # rubocop:disable Metrics/LineLength
   it 'debo obtener mis pedidos al enviar /pedidos' do
     token = 'fake_token'

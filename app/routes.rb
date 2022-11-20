@@ -12,8 +12,6 @@ require_relative '../app/tv/menu.rb'
 
 DEFAULT_MESSAGE = 'Uh? No te entiendo! Me repetis la pregunta?'.freeze
 
-URL = ENV['API_URL'] || 'http://webapp:3000'
-
 class Routes
   include Routing
 

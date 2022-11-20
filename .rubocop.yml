@@ -30,3 +30,5 @@ Layout/EndOfLine:
   Enabled: False
 RSpec/ExampleLength:
   Max: 15
+Metrics/AbcSize:
+  Max: 17

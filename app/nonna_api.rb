@@ -1,4 +1,5 @@
 require_relative '../app/presentador_menus.rb'
+require_relative '../app/presentador_errores.rb'
 
 URL = ENV['API_URL'] || 'http://webapp:3000'
 
@@ -16,13 +17,13 @@ class NonnaApi
 
   def obtener_menus(id)
     response = Faraday.get("#{URL}/menus/#{id}")
-    raise NonnaError, 'No podemos procesar tu consulta, necesitas registrarte primero' if response.status == HTTP_NO_AUTORIZADO
+    raise NonnaError, PresentadorErrores.new.presentar_sin_registracion if response.status == HTTP_NO_AUTORIZADO
 
     JSON.parse(response.body)
   end
 
   def validate(datos)
-    raise NonnaError, 'Error: faltan campos para completar el registro' if datos.length != 3
+    raise NonnaError, PresentadorErrores.new.presentar_registracion_campos_faltantes if datos.length != 3
   end
 
   def pedir_menu(mensaje)
@@ -31,7 +32,7 @@ class NonnaApi
     text = pedir(response)
     text
   rescue NonnaError => e
-    raise NonnaError, e.message
+    raise NonnaError, PresentadorErrores.new.presentar(e.message)
   end
 
   def registrar_usuario(mensaje, argumentos)
@@ -41,15 +42,15 @@ class NonnaApi
       body = { nombre: datos[0], direccion: datos[1], telefono: datos[2], id: mensaje.chat.id.to_s }
       response = Faraday.post("#{URL}/registrar", body.to_json, 'Content-Type' => 'application/json')
       text = registrar(response)
-      return text
+      text
     rescue NonnaError => e
-      raise NonnaError, e.message
+      raise NonnaError, PresentadorErrores.new.presentar(e.message)
     end
   end
 
   def consultar_pedido(id_pedido)
     response = Faraday.get("#{URL}/pedido/#{id_pedido}")
-    raise NonnaError, "No se encuentra el pedido #{id_pedido}" if response.status == HTTP_NO_ENCONTRADO
+    raise NonnaError, PresentadorErrores.new.presentar_pedido_no_encontrado(id_pedido) if response.status == HTTP_NO_ENCONTRADO
 
     JSON.parse(response.body)
   end
@@ -70,7 +71,7 @@ class NonnaApi
     response = Faraday.patch("#{URL}/calificacion", body.to_json, 'Content-Type' => 'application/json')
     calificar(response)
   rescue NonnaError => e
-    raise NonnaError, e.message
+    raise NonnaError, PresentadorErrores.new.presentar(e.message)
   end
 
   private
@@ -78,30 +79,30 @@ class NonnaApi
   def calificar(response)
     case response.status
     when HTTP_NO_AUTORIZADO
-      raise NonnaError, 'Error: solo se pueden calificar pedidos entregados o cancelados'
+      raise NonnaError, PresentadorErrores.new.presentar_califacion_tipo_pedido
     else
       body_hash = JSON.parse(response.body)
-      "Su pedido #{body_hash['id_pedido']} fue calificado!"
+      PresentadorPedidos.new.presentar_pedido_exitoso(body_hash['id_pedido'])
     end
   end
 
   def registrar(response)
     case response.status
     when HTTP_CONFLICTO
-      raise NonnaError, 'Error: el telefono ya está en uso'
+      raise NonnaError, PresentadorErrores.new.presentar_registracion_telefono
     when HTTP_PARAMETROS_INCORRECTO
-      raise NonnaError, 'Error: faltan campos para completar el registro'
+      raise NonnaError, PresentadorErrores.new.presentar_registracion_campos_faltantes
     else
       body_hash = JSON.parse(response.body)
       nombre = body_hash['nombre']
-      "Bienvenido #{nombre}!"
+      PresentadorEquipo.new.presentar_bienvenida(nombre)
     end
   end
 
   def pedir(response)
     case response.status
     when HTTP_NO_AUTORIZADO
-      raise NonnaError, 'No podemos procesar tu consulta, necesitas registrarte primero'
+      raise NonnaError, PresentadorErrores.new.presentar_registracion_campos_faltantes
     else
       body_hash = JSON.parse(response.body)
       Menu.new.manejar_respuesta(body_hash['nombre_menu'], body_hash['id_pedido'])

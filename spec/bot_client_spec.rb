@@ -338,7 +338,18 @@ describe 'BotClient' do
     then_i_get_text(token, PresentadorPedidos.new.presentar_pedidos(pedidos))
     BotClient.new(token).run_once
   end
+
+  it 'debo obtener "Por el momento no se registró ningún pedido" al enviar /pedidos y no hice ningun pedido' do
+    token = 'fake_token'
+    pedidos = []
+    mock_get_request_api(pedidos, '/pedidos/141733544', 200)
+
+    when_i_send_text(token, '/pedidos')
+    then_i_get_text(token, PresentadorPedidos.new.presentar_pedidos(pedidos))
+    BotClient.new(token).run_once
+  end
   # rubocop:enable Metrics/LineLength
+
   it 'debo obtener "Su pedido 123 fue calificado!" al enviar /calificar 123,4' do
     token = 'fake_token'
     mock_patch_request_api({ 'id_usuario' => 15, 'id_pedido' => 123, 'calificacion' => 4 }, '/calificacion', 200)

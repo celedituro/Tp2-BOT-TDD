@@ -1,5 +1,15 @@
 class PresentadorPedidos
+  MSG_PEDIDOS_VACIOS = 'Por el momento no se registró ningún pedido'.freeze
+
   def presentar_pedidos(pedidos)
+    pedidos.empty? ? presentar_lista_vacia_pedidos : presentar_lista_pedidos(pedidos)
+  end
+
+  def presentar_lista_vacia_pedidos
+    MSG_PEDIDOS_VACIOS
+  end
+
+  def presentar_lista_pedidos(pedidos)
     pedidos_presentacion = ''
     pedidos.each do |pedido|
       pedidos_presentacion.concat(generar_pedido(pedido))

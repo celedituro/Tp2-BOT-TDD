@@ -11,8 +11,6 @@ require_relative '../app/presentador_errores.rb'
 require_relative '../app/tv/menu.rb'
 
 DEFAULT_MESSAGE = 'Uh? No te entiendo! Me repetis la pregunta?'.freeze
-
-# rubocop: disable Metrics/ClassLength
 class Routes
   include Routing
 
@@ -109,12 +107,8 @@ class Routes
 
   on_message '/pedidos' do |bot, message|
     pedidos = NonnaApi.new.pedidos(message)
-    if pedidos.empty?
-      bot.api.send_message(chat_id: message.chat.id, text: 'Error')
-    else
-      text = PresentadorPedidos.new.presentar_pedidos(pedidos)
-      bot.api.send_message(chat_id: message.chat.id, text: text)
-    end
+    respuesta = PresentadorPedidos.new.presentar_pedidos(pedidos)
+    bot.api.send_message(chat_id: message.chat.id, text: respuesta)
   end
 
   on_message_pattern %r{/calificar (?<datos>.*)} do |bot, message, args|
@@ -140,4 +134,3 @@ class Routes
     bot.api.send_message(chat_id: message.chat.id, text: response)
   end
 end
-# rubocop: enable Metrics/ClassLength

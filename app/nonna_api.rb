@@ -50,7 +50,7 @@ class NonnaApi
   end
 
   def consultar_pedido(id_pedido)
-    response = Faraday.get("#{URL}/pedido/#{id_pedido}")
+    response = Faraday.get("#{URL}/pedidos/#{id_pedido}")
     raise NonnaError, PresentadorErrores.new.presentar_pedido_no_encontrado(id_pedido) if response.status == HTTP_NO_ENCONTRADO
 
     JSON.parse(response.body)
@@ -63,7 +63,7 @@ class NonnaApi
 
   def pedidos(mensaje)
     id_usuario = mensaje.chat.id
-    response = Faraday.get("#{URL}/pedidos/#{id_usuario}")
+    response = Faraday.get("#{URL}/todos/#{id_usuario}")
     JSON.parse(response.body)
   end
 

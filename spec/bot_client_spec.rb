@@ -267,7 +267,7 @@ describe 'BotClient' do
     token = 'fake_token'
     pedido = { 'id_pedido' => 3, 'estado' => 'recibido' }
 
-    mock_get_request_api(pedido, "/pedido/#{pedido['id_pedido']}", 200)
+    mock_get_request_api(pedido, "/pedidos/#{pedido['id_pedido']}", 200)
 
     when_i_send_text(token, '/consultar 3')
     then_i_get_text(token, Pedido.new.manejar_respuesta(pedido))
@@ -277,7 +277,7 @@ describe 'BotClient' do
   it 'debo obtener No se encuentra el pedido 3 al enviar /consultar 3' do
     token = 'fake_token'
 
-    mock_get_request_api({ 'message' => 'Not found' }, '/pedido/3', 404)
+    mock_get_request_api({ 'message' => 'Not found' }, '/pedidos/3', 404)
 
     when_i_send_text(token, '/consultar 3')
     then_i_get_text(token, 'No se encuentra el pedido 3')
@@ -289,7 +289,7 @@ describe 'BotClient' do
     pedido_recibido = { 'id_pedido' => 3, 'estado' => 'recibido' }
     pedido_cancelado = { 'id_pedido' => 3, 'estado' => 'cancelado' }
 
-    mock_get_request_api(pedido_recibido, "/pedido/#{pedido_recibido['id_pedido']}", 200)
+    mock_get_request_api(pedido_recibido, "/pedidos/#{pedido_recibido['id_pedido']}", 200)
 
     when_i_send_text(token, '/consultar 3')
     then_i_get_text(token, Pedido.new.manejar_respuesta(pedido_recibido))
@@ -299,7 +299,7 @@ describe 'BotClient' do
     when_i_send_text(token, '/cancelar 3')
     then_i_get_text(token, Pedido.new.manejar_respuesta(pedido_cancelado))
 
-    mock_get_request_api(pedido_cancelado, "/pedido/#{pedido_cancelado['id_pedido']}", 200)
+    mock_get_request_api(pedido_cancelado, "/pedidos/#{pedido_cancelado['id_pedido']}", 200)
 
     when_i_send_text(token, '/consultar 3')
     then_i_get_text(token, Pedido.new.manejar_respuesta(pedido_cancelado))
@@ -332,7 +332,7 @@ describe 'BotClient' do
   it 'debo obtener mis pedidos al enviar /pedidos' do
     token = 'fake_token'
     pedidos = [{ 'id_pedido' => 1, 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100, 'estado' => 'entregado' }, { 'id_pedido' => 2, 'id' => 1, 'nombre' => 'Menu individual', 'precio' => 100, 'estado' => 'en preparacion' }, { 'id_pedido' => 4, 'id' => 3, 'nombre' => 'Menu familiar', 'precio' => 250, 'estado' => 'recibido' }]
-    mock_get_request_api(pedidos, '/pedidos/141733544', 200)
+    mock_get_request_api(pedidos, '/todos/141733544', 200)
 
     when_i_send_text(token, '/pedidos')
     then_i_get_text(token, PresentadorPedidos.new.presentar_pedidos(pedidos))
@@ -342,7 +342,7 @@ describe 'BotClient' do
   it 'debo obtener "Por el momento no se registró ningún pedido" al enviar /pedidos y no hice ningun pedido' do
     token = 'fake_token'
     pedidos = []
-    mock_get_request_api(pedidos, '/pedidos/141733544', 200)
+    mock_get_request_api(pedidos, '/todos/141733544', 200)
 
     when_i_send_text(token, '/pedidos')
     then_i_get_text(token, PresentadorPedidos.new.presentar_pedidos(pedidos))

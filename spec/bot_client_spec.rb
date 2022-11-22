@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'web_mock'
-require_relative '../app/presentador_menus.rb'
+require_relative '../app/presentadores/presentador_menus.rb'
 
 # Uncomment to use VCR
 # require 'vcr_helper'

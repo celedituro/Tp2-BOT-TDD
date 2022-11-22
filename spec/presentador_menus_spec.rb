@@ -1,4 +1,4 @@
-require_relative '../app/presentador_menus.rb'
+require_relative '../app/presentadores/presentador_menus.rb'
 
 describe 'PresentadorMenus' do
   it 'cuando recibo 3 menus debo obtener un string de 3 menus' do

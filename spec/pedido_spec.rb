@@ -1,4 +1,4 @@
-require_relative '../app/tv/pedido.rb'
+require_relative '../app/pedido.rb'
 
 describe 'Pedido' do
   it 'cuando recibo un id de pedido y un estado deberia obtener un mensaje con ambos datos' do

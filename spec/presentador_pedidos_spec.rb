@@ -1,4 +1,5 @@
-require_relative '../app/presentador_pedidos.rb'
+require_relative '../app/presentadores/presentador_pedidos.rb'
+
 describe 'PresentadorPedidos' do
   # rubocop:disable Metrics/LineLength
   it 'cuando realizo 3 pedidos debo obtener una lista de 3 pedidos' do

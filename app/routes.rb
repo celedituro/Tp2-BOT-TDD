@@ -1,14 +1,14 @@
 require "#{File.dirname(__FILE__)}/../lib/routing"
 require "#{File.dirname(__FILE__)}/../lib/version"
-require "#{File.dirname(__FILE__)}/tv/pedido"
+require "#{File.dirname(__FILE__)}/pedido"
 require "#{File.dirname(__FILE__)}/nonna_api"
 require "#{File.dirname(__FILE__)}/errors/nonna_error"
 
-require_relative '../app/presentador_menus.rb'
-require_relative '../app/presentador_pedidos.rb'
-require_relative '../app/presentador_equipo.rb'
-require_relative '../app/presentador_errores.rb'
-require_relative '../app/tv/menu.rb'
+require_relative '../app/presentadores/presentador_menus.rb'
+require_relative '../app/presentadores/presentador_pedidos.rb'
+require_relative '../app/presentadores/presentador_equipo.rb'
+require_relative '../app/presentadores/presentador_errores.rb'
+require_relative '../app/menu.rb'
 
 DEFAULT_MESSAGE = 'Uh? No te entiendo! Me repetis la pregunta?'.freeze
 class Routes

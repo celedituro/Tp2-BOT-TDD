@@ -29,7 +29,7 @@ class NonnaApi
 
   def pedir_menu(mensaje)
     body = { id_usuario: mensaje.message.chat.id.to_s, id_menu: Integer(mensaje.data) }
-    response = Faraday.post("#{URL}/pedido", body.to_json, 'Content-Type' => 'application/json')
+    response = Faraday.post("#{URL}/pedidos", body.to_json, 'Content-Type' => 'application/json')
     text = pedir(response)
     text
   rescue NonnaError => e
@@ -57,7 +57,7 @@ class NonnaApi
   end
 
   def cancelar_pedido(id_pedido)
-    response = Faraday.patch("#{URL}/cancelacion?id=#{id_pedido}")
+    response = Faraday.patch("#{URL}/cancelaciones?id=#{id_pedido}")
     cancelar(response)
   end
 
@@ -71,7 +71,7 @@ class NonnaApi
     datos = argumentos['datos'].split(',')
     validar_calificacion(datos)
     body = { id_usuario: mensaje.chat.id, id_pedido: datos[0], calificacion: datos[1] }
-    response = Faraday.patch("#{URL}/calificacion", body.to_json, 'Content-Type' => 'application/json')
+    response = Faraday.patch("#{URL}/calificaciones", body.to_json, 'Content-Type' => 'application/json')
     calificar(response)
   rescue NonnaError => e
     raise NonnaError, PresentadorErrores.new.presentar(e.message)

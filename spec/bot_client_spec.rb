@@ -253,7 +253,7 @@ describe 'BotClient' do
   it 'should get a "Que menu desea pedir?" message and respond with' do
     token = 'fake_token'
 
-    mock_post_request_api({ "nombre_menu": 'Menu individual', "id_pedido": 4 }, '/pedido', 201)
+    mock_post_request_api({ "nombre_menu": 'Menu individual', "id_pedido": 4 }, '/pedidos', 201)
 
     when_i_send_keyboard_updates(token, 'Que menu desea pedir?', 1)
     then_i_get_text(token, 'Su pedido de Menu individual fue recibido con éxito. Su número de pedido es : 4')
@@ -294,7 +294,7 @@ describe 'BotClient' do
     when_i_send_text(token, '/consultar 3')
     then_i_get_text(token, Pedido.new.manejar_respuesta(pedido_recibido))
 
-    mock_patch_request_api(pedido_cancelado, "/cancelacion?id=#{pedido_cancelado['id_pedido']}", 202)
+    mock_patch_request_api(pedido_cancelado, "/cancelaciones?id=#{pedido_cancelado['id_pedido']}", 202)
 
     when_i_send_text(token, '/cancelar 3')
     then_i_get_text(token, Pedido.new.manejar_respuesta(pedido_cancelado))
@@ -311,7 +311,7 @@ describe 'BotClient' do
     token = 'fake_token'
     pedido = { 'id_pedido' => 4, 'estado' => 'cancelado' }
 
-    mock_patch_request_api(pedido, "/cancelacion?id=#{pedido['id_pedido']}", 202)
+    mock_patch_request_api(pedido, "/cancelaciones?id=#{pedido['id_pedido']}", 202)
 
     when_i_send_text(token, '/cancelar 4')
     then_i_get_text(token, Pedido.new.manejar_respuesta(pedido))
@@ -321,7 +321,7 @@ describe 'BotClient' do
   it 'debo obtener "Error: un pedido solo se puede cancelar en estado recibido o en preparación" al enviar /cancelar 4' do
     token = 'fake_token'
 
-    mock_patch_request_api([], '/cancelacion?id=4', 401)
+    mock_patch_request_api([], '/cancelaciones?id=4', 401)
 
     when_i_send_text(token, '/cancelar 4')
     then_i_get_text(token, PresentadorErrores.new.presentar_cancelacion_estado_incorrecto)
@@ -352,7 +352,7 @@ describe 'BotClient' do
 
   it 'debo obtener "Su pedido 123 fue calificado!" al enviar /calificar 123,4' do
     token = 'fake_token'
-    mock_patch_request_api({ 'id_usuario' => 15, 'id_pedido' => 123, 'calificacion' => 4 }, '/calificacion', 200)
+    mock_patch_request_api({ 'id_usuario' => 15, 'id_pedido' => 123, 'calificacion' => 4 }, '/calificaciones', 200)
 
     when_i_send_text(token, '/calificar 123,4')
     then_i_get_text(token, 'Su pedido 123 fue calificado!')
@@ -361,7 +361,7 @@ describe 'BotClient' do
 
   it 'debo obtener "Error: solo se pueden calificar pedidos entregados o cancelados" al enviar /calificar 123,4' do
     token = 'fake_token'
-    mock_patch_request_api({ 'message' => 'Unauthorized' }, '/calificacion', 401)
+    mock_patch_request_api({ 'message' => 'Unauthorized' }, '/calificaciones', 401)
 
     when_i_send_text(token, '/calificar 123,4')
     then_i_get_text(token, 'Error: solo se pueden calificar pedidos entregados o cancelados')
@@ -370,7 +370,7 @@ describe 'BotClient' do
 
   it 'debo obtener "Error: faltan campos para completar la calificacion" al enviar /calificar 123' do
     token = 'fake_token'
-    mock_patch_request_api({ 'message' => 'Unauthorized' }, '/calificacion', 401)
+    mock_patch_request_api({ 'message' => 'Unauthorized' }, '/calificaciones', 401)
 
     when_i_send_text(token, '/calificar 123')
     then_i_get_text(token, 'Error: faltan campos para completar la calificacion')
